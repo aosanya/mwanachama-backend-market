@@ -830,6 +830,7 @@
     "ErrNotFound": 404,
     "ErrForbidden": 403,
     "ErrAlreadyAsked": 409,
-    "ErrPosterNotReady": 409
+    "ErrPosterNotReady": 409,
+    "ErrPosterAway": 409
   }
 }

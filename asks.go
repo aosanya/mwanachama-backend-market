@@ -20,6 +20,9 @@ func (m *marketManager) CreateAsk(ctx context.Context, caller string, a Ask) (As
 	if err := m.get(ctx, RolePoster, a.PosterID, &p); err != nil {
 		return a, err
 	}
+	if p.Availability == models.Away {
+		return a, ErrPosterAway
+	}
 	a.ID, a.Picker, a.Answer, a.CreatedAt, a.AnsweredAt = newID(), caller, models.AnswerWaiting, m.now(), ""
 	if err := m.checks(RoleAsk, a); err != nil {
 		return a, err

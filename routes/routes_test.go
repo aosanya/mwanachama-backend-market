@@ -62,3 +62,13 @@ func TestTheDeclaredToolsCarryTheNamesCallersUse(t *testing.T) {
 	}
 	_ = context.Background
 }
+
+func TestEverySentinelIsMappedToAStatus(t *testing.T) {
+	missing, err := routes.Table.UnmappedSentinels()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, problem := range missing {
+		t.Error(problem)
+	}
+}

@@ -9,4 +9,5 @@ var (
 	ErrForbidden      = errors.New("market: forbidden")
 	ErrAlreadyAsked   = errors.New("market: already asked")
 	ErrPosterNotReady = errors.New("market: poster not approved")
+	ErrPosterAway     = errors.New("market: poster is away")
 )

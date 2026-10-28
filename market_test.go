@@ -154,3 +154,20 @@ func TestAnUnapprovedPosterCannotPostOrSell(t *testing.T) {
 		t.Fatalf("%v", err)
 	}
 }
+
+func TestAnAwayPosterIsNotAskedAndIsAskableAgainWhenAvailable(t *testing.T) {
+	m, ctx := newManager(t)
+	p := approvedPoster(t, m, ctx, "ann")
+	if _, err := m.SetAvailability(ctx, "ann", p.ID, models.Away); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := m.CreateAsk(ctx, "bea", market.Ask{PosterID: p.ID, Question: "any beans?"}); !errors.Is(err, market.ErrPosterAway) {
+		t.Fatalf("%v", err)
+	}
+	if _, err := m.SetAvailability(ctx, "ann", p.ID, models.Available); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := m.CreateAsk(ctx, "bea", market.Ask{PosterID: p.ID, Question: "any beans?"}); err != nil {
+		t.Fatal(err)
+	}
+}

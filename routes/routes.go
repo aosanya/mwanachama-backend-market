@@ -20,6 +20,7 @@ var Sentinels = map[string]error{
 	"ErrForbidden":      market.ErrForbidden,
 	"ErrAlreadyAsked":   market.ErrAlreadyAsked,
 	"ErrPosterNotReady": market.ErrPosterNotReady,
+	"ErrPosterAway":     market.ErrPosterAway,
 }
 
 var AnonymousActions = []string{}
