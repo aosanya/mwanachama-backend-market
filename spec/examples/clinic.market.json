@@ -1,0 +1,73 @@
+{
+  "module": "market",
+  "domain": "clinic",
+  "instance": "cln1",
+  "objects": [
+    {
+      "role": "poster",
+      "name": "practitioner",
+      "table": "practitioners",
+      "description": "Someone who posts what he has on offer to the people of an agency, and who is approved before he is shown."
+    },
+    {
+      "role": "offer",
+      "name": "slot_offer",
+      "table": "slot_offers",
+      "description": "What a poster has on offer, in his own words, at a price."
+    },
+    {
+      "role": "request",
+      "name": "visit_request",
+      "table": "visit_requests",
+      "description": "What a picker wants, in her words."
+    },
+    {
+      "role": "ask",
+      "name": "availability_query",
+      "table": "availability_querys",
+      "description": "One poster asked one question about one request or offer."
+    },
+    {
+      "role": "notice",
+      "name": "open_need",
+      "table": "open_needs",
+      "description": "What a picker wants shown to every poster until she takes it down."
+    },
+    {
+      "role": "yes",
+      "name": "confirmation",
+      "table": "confirmations",
+      "description": "A poster's yes to an ask, kept as a record until delivered or called off."
+    },
+    {
+      "role": "order",
+      "name": "booking",
+      "table": "bookings",
+      "description": "A picker's order with a poster, keeping the terms it started with."
+    },
+    {
+      "role": "group_order",
+      "name": "clinic_day",
+      "table": "clinic_days",
+      "description": "An order several pickers join, with a minimum and terms that can be revised."
+    },
+    {
+      "role": "line",
+      "name": "attendee",
+      "table": "attendees",
+      "description": "One picker's amount in a group order and her answer to the current terms."
+    },
+    {
+      "role": "stock",
+      "name": "capacity",
+      "table": "capacitys",
+      "description": "A poster's own private count for a product."
+    },
+    {
+      "role": "trail",
+      "name": "booking_trail",
+      "table": "booking_trails",
+      "description": "Who did what to an order and when."
+    }
+  ]
+}

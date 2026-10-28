@@ -1,0 +1,73 @@
+{
+  "module": "market",
+  "domain": "inputs",
+  "instance": "inp1",
+  "objects": [
+    {
+      "role": "poster",
+      "name": "supplier",
+      "table": "suppliers",
+      "description": "Someone who posts what he has on offer to the people of an agency, and who is approved before he is shown."
+    },
+    {
+      "role": "offer",
+      "name": "listing",
+      "table": "listings",
+      "description": "What a poster has on offer, in his own words, at a price."
+    },
+    {
+      "role": "request",
+      "name": "want",
+      "table": "wants",
+      "description": "What a picker wants, in her words."
+    },
+    {
+      "role": "ask",
+      "name": "enquiry",
+      "table": "enquirys",
+      "description": "One poster asked one question about one request or offer."
+    },
+    {
+      "role": "notice",
+      "name": "wanted_notice",
+      "table": "wanted_notices",
+      "description": "What a picker wants shown to every poster until she takes it down."
+    },
+    {
+      "role": "yes",
+      "name": "promise",
+      "table": "promises",
+      "description": "A poster's yes to an ask, kept as a record until delivered or called off."
+    },
+    {
+      "role": "order",
+      "name": "order",
+      "table": "orders",
+      "description": "A picker's order with a poster, keeping the terms it started with."
+    },
+    {
+      "role": "group_order",
+      "name": "pool",
+      "table": "pools",
+      "description": "An order several pickers join, with a minimum and terms that can be revised."
+    },
+    {
+      "role": "line",
+      "name": "pool_line",
+      "table": "pool_lines",
+      "description": "One picker's amount in a group order and her answer to the current terms."
+    },
+    {
+      "role": "stock",
+      "name": "stock_count",
+      "table": "stock_counts",
+      "description": "A poster's own private count for a product."
+    },
+    {
+      "role": "trail",
+      "name": "trail",
+      "table": "trails",
+      "description": "Who did what to an order and when."
+    }
+  ]
+}

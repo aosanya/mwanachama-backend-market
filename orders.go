@@ -1,0 +1,121 @@
+package market
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/aosanya/mwanachama-backend-market/models"
+)
+
+const WorkflowVersion = 1
+
+func unitPrice(o Offer, quantity float64) float64 {
+	if o.BulkPrice > 0 && o.BulkMin > 0 && quantity >= o.BulkMin {
+		return o.BulkPrice
+	}
+	return o.Price
+}
+
+func (m *marketManager) BuyNow(ctx context.Context, caller, offerID string, quantity float64) (Order, error) {
+	var o Offer
+	if err := m.get(ctx, RoleOffer, offerID, &o); err != nil {
+		return Order{}, err
+	}
+	if quantity <= 0 || caller == "" {
+		return Order{}, fmt.Errorf("%w: an order needs a picker and a positive quantity", ErrInvalid)
+	}
+	var p Poster
+	if err := m.get(ctx, RolePoster, o.PosterID, &p); err != nil {
+		return Order{}, err
+	}
+	if p.Status != models.PosterApproved {
+		return Order{}, ErrPosterNotReady
+	}
+	ord := Order{ID: newID(), Picker: caller, PosterID: o.PosterID, OfferID: o.ID, Product: o.Product,
+		Quantity: quantity, UnitPrice: unitPrice(o, quantity), WorkflowVersion: WorkflowVersion,
+		State: models.OrderPlaced, CreatedAt: m.now()}
+	if ord.Product == "" {
+		ord.Product = o.ProductWords
+	}
+	if err := m.checks(RoleOrder, ord); err != nil {
+		return ord, err
+	}
+	if err := m.insert(ctx, RoleOrder, ord); err != nil {
+		return ord, err
+	}
+	return ord, m.note(ctx, ord.ID, caller, "placed")
+}
+
+func (m *marketManager) visibleOrder(ctx context.Context, caller, id string) (Order, bool, error) {
+	var o Order
+	if err := m.get(ctx, RoleOrder, id, &o); err != nil {
+		return o, false, err
+	}
+	if o.Picker == caller && caller != "" {
+		return o, false, nil
+	}
+	if _, err := m.posterOwnedBy(ctx, caller, o.PosterID); err == nil {
+		return o, true, nil
+	}
+	return o, false, ErrNotFound
+}
+
+func (m *marketManager) CancelOrder(ctx context.Context, caller, id string) (Order, error) {
+	o, _, err := m.visibleOrder(ctx, caller, id)
+	if err != nil {
+		return o, err
+	}
+	if o.State != models.OrderPlaced {
+		return o, ErrConflict
+	}
+	o.State = models.OrderCancelled
+	if err := m.update(ctx, RoleOrder, id, o); err != nil {
+		return o, err
+	}
+	return o, m.note(ctx, id, caller, "cancelled")
+}
+
+func (m *marketManager) MarkPaid(ctx context.Context, caller, id string) (Order, error) {
+	o, byPoster, err := m.visibleOrder(ctx, caller, id)
+	if err != nil {
+		return o, err
+	}
+	if !byPoster {
+		return o, ErrForbidden
+	}
+	o.Paid = true
+	if err := m.update(ctx, RoleOrder, id, o); err != nil {
+		return o, err
+	}
+	return o, m.note(ctx, id, caller, "marked paid")
+}
+
+func (m *marketManager) GetOrder(ctx context.Context, caller, id string) (Order, error) {
+	o, _, err := m.visibleOrder(ctx, caller, id)
+	return o, err
+}
+
+func (m *marketManager) ListOrders(ctx context.Context, caller string) ([]Order, error) {
+	owned, err := m.ownedPosters(ctx, caller)
+	if err != nil {
+		return nil, err
+	}
+	all, err := listOf[Order](m, m.q(ctx, RoleOrder), RoleOrder)
+	if err != nil {
+		return nil, err
+	}
+	var out []Order
+	for _, o := range all {
+		if (o.Picker == caller && caller != "") || owned[o.PosterID] {
+			out = append(out, o)
+		}
+	}
+	return out, nil
+}
+
+func (m *marketManager) OrderTrail(ctx context.Context, caller, orderID string) ([]Trail, error) {
+	if _, _, err := m.visibleOrder(ctx, caller, orderID); err != nil {
+		return nil, err
+	}
+	return listOf[Trail](m, m.q(ctx, RoleTrail).Where("order_id = ?", orderID), RoleTrail)
+}

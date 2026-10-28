@@ -1,0 +1,740 @@
+{
+  "module": "market",
+  "objects": [
+    {
+      "role": "poster",
+      "description": "Someone who posts what he has on offer to the people of an agency, and who is approved before he is shown.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "description": "Storage key, minted by the server.",
+          "primary": true
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "His name as the agency shows it.",
+          "required": true
+        },
+        {
+          "name": "area",
+          "type": "string",
+          "description": "Where he is."
+        },
+        {
+          "name": "posts",
+          "type": "text",
+          "description": "What he posts, in his words."
+        },
+        {
+          "name": "owner",
+          "type": "string",
+          "description": "The actor who applied, bound from the caller."
+        },
+        {
+          "name": "approved_by",
+          "type": "string",
+          "description": "The actor who approved him, bound from the caller."
+        },
+        {
+          "name": "status",
+          "type": "enum",
+          "description": "Where his application stands.",
+          "values": [
+            "pending",
+            "approved",
+            "declined",
+            "removed"
+          ],
+          "default": "pending"
+        },
+        {
+          "name": "availability",
+          "type": "enum",
+          "description": "Whether he is taking asks now.",
+          "values": [
+            "available",
+            "away"
+          ],
+          "default": "available"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "description": "When the row was created."
+        }
+      ],
+      "indexes": [
+        {
+          "name": "status",
+          "description": "Reads status.",
+          "fields": [
+            "status"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "offer",
+      "description": "What a poster has on offer, in his own words, at a price.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "description": "Storage key, minted by the server.",
+          "primary": true
+        },
+        {
+          "name": "poster_id",
+          "type": "string",
+          "description": "The poster who posted it.",
+          "required": true
+        },
+        {
+          "name": "product_words",
+          "type": "string",
+          "description": "The product in the poster's own words.",
+          "required": true
+        },
+        {
+          "name": "unit_words",
+          "type": "string",
+          "description": "The unit in the poster's own words."
+        },
+        {
+          "name": "price",
+          "type": "float",
+          "description": "Price per unit."
+        },
+        {
+          "name": "bulk_min",
+          "type": "float",
+          "description": "Smallest amount that earns the bulk price."
+        },
+        {
+          "name": "bulk_price",
+          "type": "float",
+          "description": "Price per unit at or above the bulk minimum."
+        },
+        {
+          "name": "product",
+          "type": "string",
+          "description": "The product the AI grouped it under."
+        },
+        {
+          "name": "posted_at",
+          "type": "timestamp",
+          "description": "When it was posted."
+        }
+      ],
+      "indexes": [
+        {
+          "name": "poster",
+          "description": "Reads poster.",
+          "fields": [
+            "poster_id"
+          ]
+        },
+        {
+          "name": "product",
+          "description": "Reads product.",
+          "fields": [
+            "product"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "request",
+      "description": "What a picker wants, in her words.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "description": "Storage key, minted by the server.",
+          "primary": true
+        },
+        {
+          "name": "picker",
+          "type": "string",
+          "description": "The actor who wants it, bound from the caller."
+        },
+        {
+          "name": "wanted",
+          "type": "text",
+          "description": "What she wants.",
+          "required": true
+        },
+        {
+          "name": "quantity",
+          "type": "float",
+          "description": "How much."
+        },
+        {
+          "name": "needed_by",
+          "type": "string",
+          "description": "By when."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "description": "When the row was created."
+        }
+      ],
+      "indexes": [
+        {
+          "name": "picker",
+          "description": "Reads picker.",
+          "fields": [
+            "picker"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "ask",
+      "description": "One poster asked one question about one request or offer.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "description": "Storage key, minted by the server.",
+          "primary": true
+        },
+        {
+          "name": "poster_id",
+          "type": "string",
+          "description": "The poster asked.",
+          "required": true
+        },
+        {
+          "name": "request_id",
+          "type": "string",
+          "description": "The request it is about."
+        },
+        {
+          "name": "offer_id",
+          "type": "string",
+          "description": "The offer it is about."
+        },
+        {
+          "name": "picker",
+          "type": "string",
+          "description": "The picker it is for."
+        },
+        {
+          "name": "kind",
+          "type": "string",
+          "description": "What kind of question."
+        },
+        {
+          "name": "question",
+          "type": "text",
+          "description": "The question.",
+          "required": true
+        },
+        {
+          "name": "answer",
+          "type": "enum",
+          "description": "The answer; silence stays waiting.",
+          "values": [
+            "waiting",
+            "yes",
+            "no"
+          ],
+          "default": "waiting"
+        },
+        {
+          "name": "detail",
+          "type": "text",
+          "description": "Plain text such as pickup or destination."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "description": "When the row was created."
+        },
+        {
+          "name": "answered_at",
+          "type": "timestamp",
+          "description": "When it was answered."
+        }
+      ],
+      "indexes": [
+        {
+          "name": "poster_answer",
+          "description": "Reads poster answer.",
+          "fields": [
+            "poster_id",
+            "answer"
+          ]
+        },
+        {
+          "name": "request",
+          "description": "Reads request.",
+          "fields": [
+            "request_id"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "notice",
+      "description": "What a picker wants shown to every poster until she takes it down.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "description": "Storage key, minted by the server.",
+          "primary": true
+        },
+        {
+          "name": "picker",
+          "type": "string",
+          "description": "The actor who posted it, bound from the caller."
+        },
+        {
+          "name": "wanted",
+          "type": "text",
+          "description": "What is wanted.",
+          "required": true
+        },
+        {
+          "name": "quantity",
+          "type": "float",
+          "description": "How much."
+        },
+        {
+          "name": "needed_by",
+          "type": "string",
+          "description": "By when."
+        },
+        {
+          "name": "state",
+          "type": "enum",
+          "description": "Whether it still stands.",
+          "values": [
+            "open",
+            "withdrawn"
+          ],
+          "default": "open"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "description": "When the row was created."
+        }
+      ],
+      "indexes": [
+        {
+          "name": "state",
+          "description": "Reads state.",
+          "fields": [
+            "state"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "yes",
+      "description": "A poster's yes to an ask, kept as a record until delivered or called off.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "description": "Storage key, minted by the server.",
+          "primary": true
+        },
+        {
+          "name": "ask_id",
+          "type": "string",
+          "description": "The ask it answers.",
+          "required": true
+        },
+        {
+          "name": "poster_id",
+          "type": "string",
+          "description": "The poster who said yes."
+        },
+        {
+          "name": "picker",
+          "type": "string",
+          "description": "The picker it is for."
+        },
+        {
+          "name": "what",
+          "type": "string",
+          "description": "What."
+        },
+        {
+          "name": "quantity",
+          "type": "float",
+          "description": "How many."
+        },
+        {
+          "name": "date",
+          "type": "string",
+          "description": "The date promised."
+        },
+        {
+          "name": "note",
+          "type": "text",
+          "description": "A free note."
+        },
+        {
+          "name": "state",
+          "type": "enum",
+          "description": "Where the yes stands.",
+          "values": [
+            "open",
+            "delivered",
+            "called_off"
+          ],
+          "default": "open"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "description": "When the row was created."
+        }
+      ],
+      "indexes": [
+        {
+          "name": "poster_state",
+          "description": "Reads poster state.",
+          "fields": [
+            "poster_id",
+            "state"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "order",
+      "description": "A picker's order with a poster, keeping the terms it started with.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "description": "Storage key, minted by the server.",
+          "primary": true
+        },
+        {
+          "name": "picker",
+          "type": "string",
+          "description": "The actor who ordered, bound from the caller."
+        },
+        {
+          "name": "poster_id",
+          "type": "string",
+          "description": "The poster.",
+          "required": true
+        },
+        {
+          "name": "offer_id",
+          "type": "string",
+          "description": "The offer it came from."
+        },
+        {
+          "name": "product",
+          "type": "string",
+          "description": "The product."
+        },
+        {
+          "name": "quantity",
+          "type": "float",
+          "description": "How much."
+        },
+        {
+          "name": "unit_price",
+          "type": "float",
+          "description": "The price as it was when she tapped."
+        },
+        {
+          "name": "workflow_version",
+          "type": "int",
+          "description": "The workflow version it started with."
+        },
+        {
+          "name": "state",
+          "type": "enum",
+          "description": "Where the order stands.",
+          "values": [
+            "placed",
+            "cancelled",
+            "delivered"
+          ],
+          "default": "placed"
+        },
+        {
+          "name": "paid",
+          "type": "bool",
+          "description": "Whether the poster marked it paid."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "description": "When the row was created."
+        }
+      ],
+      "indexes": [
+        {
+          "name": "picker",
+          "description": "Reads picker.",
+          "fields": [
+            "picker"
+          ]
+        },
+        {
+          "name": "poster_state",
+          "description": "Reads poster state.",
+          "fields": [
+            "poster_id",
+            "state"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "group_order",
+      "description": "An order several pickers join, with a minimum and terms that can be revised.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "description": "Storage key, minted by the server.",
+          "primary": true
+        },
+        {
+          "name": "poster_id",
+          "type": "string",
+          "description": "The poster.",
+          "required": true
+        },
+        {
+          "name": "coordinator",
+          "type": "string",
+          "description": "The actor who started it, bound from the caller."
+        },
+        {
+          "name": "product",
+          "type": "string",
+          "description": "The product."
+        },
+        {
+          "name": "price",
+          "type": "float",
+          "description": "Price per unit under the current terms."
+        },
+        {
+          "name": "minimum",
+          "type": "float",
+          "description": "The smallest total for it to go ahead.",
+          "required": true
+        },
+        {
+          "name": "terms_version",
+          "type": "int",
+          "description": "The current terms version."
+        },
+        {
+          "name": "terms_history",
+          "type": "text",
+          "description": "Every previous version of the terms, as JSON text."
+        },
+        {
+          "name": "workflow_version",
+          "type": "int",
+          "description": "The workflow version it started with."
+        },
+        {
+          "name": "state",
+          "type": "enum",
+          "description": "Where it stands.",
+          "values": [
+            "open",
+            "revising",
+            "closed",
+            "cancelled"
+          ],
+          "default": "open"
+        },
+        {
+          "name": "direction",
+          "type": "enum",
+          "description": "Whether the group buys from the poster or sells to him.",
+          "values": [
+            "buy",
+            "sell"
+          ],
+          "default": "buy"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "description": "When the row was created."
+        }
+      ],
+      "indexes": [
+        {
+          "name": "poster",
+          "description": "Reads poster.",
+          "fields": [
+            "poster_id"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "line",
+      "description": "One picker's amount in a group order and her answer to the current terms.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "description": "Storage key, minted by the server.",
+          "primary": true
+        },
+        {
+          "name": "group_order_id",
+          "type": "string",
+          "description": "The group order.",
+          "required": true
+        },
+        {
+          "name": "picker",
+          "type": "string",
+          "description": "The actor, bound from the caller."
+        },
+        {
+          "name": "quantity",
+          "type": "float",
+          "description": "Her amount."
+        },
+        {
+          "name": "answer",
+          "type": "enum",
+          "description": "Her answer to the current terms.",
+          "values": [
+            "waiting",
+            "yes",
+            "no"
+          ],
+          "default": "waiting"
+        },
+        {
+          "name": "answered_version",
+          "type": "int",
+          "description": "The terms version she answered."
+        },
+        {
+          "name": "decided_by_coordinator",
+          "type": "bool",
+          "description": "Whether the coordinator decided for a silent one."
+        },
+        {
+          "name": "paid",
+          "type": "bool",
+          "description": "Whether it is marked paid."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "description": "When the row was created."
+        }
+      ],
+      "indexes": [
+        {
+          "name": "group",
+          "description": "Reads group.",
+          "fields": [
+            "group_order_id"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "stock",
+      "description": "A poster's own private count for a product.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "description": "Storage key, minted by the server.",
+          "primary": true
+        },
+        {
+          "name": "poster_id",
+          "type": "string",
+          "description": "The poster.",
+          "required": true
+        },
+        {
+          "name": "product",
+          "type": "string",
+          "description": "The product.",
+          "required": true
+        },
+        {
+          "name": "count",
+          "type": "float",
+          "description": "His count."
+        }
+      ],
+      "indexes": [
+        {
+          "name": "poster_product",
+          "description": "Reads poster product.",
+          "fields": [
+            "poster_id",
+            "product"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "trail",
+      "description": "Who did what to an order and when.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "description": "Storage key, minted by the server.",
+          "primary": true
+        },
+        {
+          "name": "order_id",
+          "type": "string",
+          "description": "The order.",
+          "required": true
+        },
+        {
+          "name": "actor",
+          "type": "string",
+          "description": "Who, bound from the caller."
+        },
+        {
+          "name": "what",
+          "type": "string",
+          "description": "What was done.",
+          "required": true
+        },
+        {
+          "name": "at",
+          "type": "timestamp",
+          "description": "When."
+        }
+      ],
+      "indexes": [
+        {
+          "name": "order",
+          "description": "Reads order.",
+          "fields": [
+            "order_id"
+          ]
+        }
+      ]
+    }
+  ]
+}
