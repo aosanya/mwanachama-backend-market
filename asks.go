@@ -34,7 +34,7 @@ func (m *marketManager) CreateAsk(ctx context.Context, caller string, a Ask) (As
 	return a, m.insert(ctx, RoleAsk, a)
 }
 
-func (m *marketManager) AnswerAsk(ctx context.Context, caller, askID, answer string, y Yes) (Ask, error) {
+func (m *marketManager) AnswerAsk(ctx context.Context, caller, askID, answer, date, note string) (Ask, error) {
 	var a Ask
 	if err := m.get(ctx, RoleAsk, askID, &a); err != nil {
 		return a, err
@@ -49,6 +49,7 @@ func (m *marketManager) AnswerAsk(ctx context.Context, caller, askID, answer str
 		return a, ErrConflict
 	}
 	if answer == models.AnswerYes {
+		y := Yes{Date: date, Note: note}
 		if y.Date == "" {
 			return a, fmt.Errorf("%w: a yes carries a date", ErrInvalid)
 		}

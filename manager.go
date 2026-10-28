@@ -42,7 +42,7 @@ type MarketManager interface {
 
 	CreateRequest(ctx context.Context, caller string, r Request) (Request, error)
 	CreateAsk(ctx context.Context, caller string, a Ask) (Ask, error)
-	AnswerAsk(ctx context.Context, caller, askID, answer string, y Yes) (Ask, error)
+	AnswerAsk(ctx context.Context, caller, askID, answer, date, note string) (Ask, error)
 	ListAsks(ctx context.Context, caller string) ([]Ask, error)
 	ListYeses(ctx context.Context, caller string) ([]Yes, error)
 

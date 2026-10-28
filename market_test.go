@@ -54,10 +54,10 @@ func TestAReplyNeverOpensAnOrderAndSilenceStaysWaiting(t *testing.T) {
 	if got, _ := m.ListAsks(ctx, "bea"); got[0].Answer != models.AnswerWaiting {
 		t.Fatal("silence must stay waiting")
 	}
-	if _, err := m.AnswerAsk(ctx, "ann", a.ID, models.AnswerYes, market.Yes{}); err == nil {
+	if _, err := m.AnswerAsk(ctx, "ann", a.ID, models.AnswerYes, "", ""); err == nil {
 		t.Fatal("a yes without a date must be refused")
 	}
-	if _, err := m.AnswerAsk(ctx, "ann", a.ID, models.AnswerYes, market.Yes{Date: "2026-11-01"}); err != nil {
+	if _, err := m.AnswerAsk(ctx, "ann", a.ID, models.AnswerYes, "2026-11-01", ""); err != nil {
 		t.Fatal(err)
 	}
 	if orders, _ := m.ListOrders(ctx, "bea"); len(orders) != 0 {
