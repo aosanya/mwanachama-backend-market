@@ -7,8 +7,6 @@ import (
 	"github.com/aosanya/mwanachama-backend-market/models"
 )
 
-const WorkflowVersion = 1
-
 func unitPrice(o Offer, quantity float64) float64 {
 	if o.BulkPrice > 0 && o.BulkMin > 0 && quantity >= o.BulkMin {
 		return o.BulkPrice
@@ -31,8 +29,12 @@ func (m *marketManager) BuyNow(ctx context.Context, caller, offerID string, quan
 	if p.Status != models.PosterApproved {
 		return Order{}, ErrPosterNotReady
 	}
+	wf, err := m.workflow(ctx, WorkflowBuyNow, 0)
+	if err != nil {
+		return Order{}, err
+	}
 	ord := Order{ID: newID(), Picker: caller, PosterID: o.PosterID, OfferID: o.ID, Product: o.Product,
-		Quantity: quantity, UnitPrice: unitPrice(o, quantity), WorkflowVersion: WorkflowVersion,
+		Quantity: quantity, UnitPrice: unitPrice(o, quantity), WorkflowVersion: wf.Version,
 		State: models.OrderPlaced, CreatedAt: m.now()}
 	if ord.Product == "" {
 		ord.Product = o.ProductWords
@@ -65,12 +67,21 @@ func (m *marketManager) CancelOrder(ctx context.Context, caller, id string) (Ord
 	if err != nil {
 		return o, err
 	}
+	_, step, err := m.gate(ctx, WorkflowCancel, o.WorkflowVersion, StepCancelled, caller, parties{picker: o.Picker, posterID: o.PosterID})
+	if err != nil {
+		return o, err
+	}
 	if o.State != models.OrderPlaced {
 		return o, ErrConflict
 	}
 	o.State = models.OrderCancelled
 	if err := m.update(ctx, RoleOrder, id, o); err != nil {
 		return o, err
+	}
+	if step.ClosesYes {
+		if err := m.closeYeses(ctx, o); err != nil {
+			return o, err
+		}
 	}
 	return o, m.note(ctx, id, caller, "cancelled")
 }
@@ -82,6 +93,9 @@ func (m *marketManager) MarkPaid(ctx context.Context, caller, id string) (Order,
 	}
 	if !byPoster {
 		return o, ErrForbidden
+	}
+	if _, _, err := m.gate(ctx, WorkflowBuyNow, o.WorkflowVersion, StepPaid, caller, parties{picker: o.Picker, posterID: o.PosterID}); err != nil {
+		return o, err
 	}
 	o.Paid = true
 	if err := m.update(ctx, RoleOrder, id, o); err != nil {

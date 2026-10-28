@@ -27,6 +27,7 @@ func manager(t *testing.T) market.MarketManager {
 	if err != nil {
 		t.Fatal(err)
 	}
+	m.UseCoordinators(func(_ context.Context, c string) bool { return c == "coordinator" })
 	return m
 }
 

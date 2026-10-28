@@ -29,6 +29,9 @@ type Trail = models.Trail
 type GroupOrderView = models.GroupOrderView
 
 type MarketManager interface {
+	UseWorkflows(s WorkflowSource)
+	UseCoordinators(c CoordinatorCheck)
+
 	ApplyPoster(ctx context.Context, caller string, p Poster) (Poster, error)
 	ListPosters(ctx context.Context, status string) ([]Poster, error)
 	ApprovePoster(ctx context.Context, caller, id string) (Poster, error)
@@ -72,6 +75,9 @@ type marketManager struct {
 	db    *gorm.DB
 	st    *store
 	clock func() time.Time
+
+	source       WorkflowSource
+	coordinators CoordinatorCheck
 }
 
 func NewMarketManager(db *gorm.DB, s *spec.Spec) (MarketManager, error) {

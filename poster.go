@@ -32,6 +32,9 @@ func (m *marketManager) setStatus(ctx context.Context, caller, id, status string
 	if err := m.get(ctx, RolePoster, id, &p); err != nil {
 		return p, err
 	}
+	if _, _, err := m.gate(ctx, WorkflowApprovePoster, 0, StepApproved, caller, parties{}); err != nil {
+		return p, err
+	}
 	p.Status = status
 	if status == models.PosterApproved {
 		p.ApprovedBy = caller

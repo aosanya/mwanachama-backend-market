@@ -53,6 +53,7 @@ func newPostgres(t *testing.T) (market.MarketManager, context.Context) {
 	if err != nil {
 		t.Fatalf("manager: %v", err)
 	}
+	m.UseCoordinators(func(_ context.Context, c string) bool { return c == "coordinator" })
 	return m, context.Background()
 }
 

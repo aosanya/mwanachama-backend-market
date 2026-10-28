@@ -35,6 +35,7 @@ func newManager(t *testing.T) (market.MarketManager, context.Context) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	m.UseCoordinators(func(_ context.Context, c string) bool { return c == "coordinator" || c == "coord" })
 	return m, context.Background()
 }
 

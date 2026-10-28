@@ -25,8 +25,12 @@ func (m *marketManager) StartGroupOrder(ctx context.Context, caller string, g Gr
 	if p.Status != models.PosterApproved {
 		return g, ErrPosterNotReady
 	}
+	wf, _, err := m.gate(ctx, WorkflowGroupOrder, 0, StepStart, caller, parties{})
+	if err != nil {
+		return g, err
+	}
 	g.ID, g.Coordinator, g.TermsVersion, g.TermsHistory = newID(), caller, 1, "[]"
-	g.WorkflowVersion, g.State, g.CreatedAt = WorkflowVersion, models.GroupOpen, m.now()
+	g.WorkflowVersion, g.State, g.CreatedAt = wf.Version, models.GroupOpen, m.now()
 	if g.Direction == "" {
 		g.Direction = models.DirectionBuy
 	}

@@ -45,6 +45,9 @@ func (m *marketManager) AnswerAsk(ctx context.Context, caller, askID, answer, da
 	if _, err := m.posterOwnedBy(ctx, caller, a.PosterID); err != nil {
 		return a, err
 	}
+	if _, _, err := m.gate(ctx, WorkflowBuyNow, 0, StepYes, caller, parties{picker: a.Picker, posterID: a.PosterID}); err != nil {
+		return a, err
+	}
 	if answer != models.AnswerYes && answer != models.AnswerNo {
 		return a, fmt.Errorf("%w: an ask is answered yes or no, silence stays waiting", ErrInvalid)
 	}
