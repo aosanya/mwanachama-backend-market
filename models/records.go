@@ -42,6 +42,7 @@ type Ask struct {
 	OfferID    string `json:"offer_id,omitempty"`
 	Picker     string `json:"picker,omitempty"`
 	Kind       string `json:"kind,omitempty"`
+	Product    string `json:"product,omitempty"`
 	Question   string `json:"question"`
 	Answer     string `json:"answer"`
 	Detail     string `json:"detail,omitempty"`

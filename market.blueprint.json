@@ -229,6 +229,11 @@
           "description": "What kind of question."
         },
         {
+          "name": "product",
+          "type": "string",
+          "description": "The product the ask is about, when the question is about one."
+        },
+        {
           "name": "question",
           "type": "text",
           "description": "The question.",
