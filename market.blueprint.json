@@ -399,6 +399,11 @@
           "description": "The price he quotes for it, when he gives one."
         },
         {
+          "name": "minutes",
+          "type": "int",
+          "description": "How many minutes away he is, when he says so."
+        },
+        {
           "name": "state",
           "type": "enum",
           "description": "Where the yes stands.",

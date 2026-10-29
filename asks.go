@@ -80,6 +80,10 @@ func (m *marketManager) quotedOffer(ctx context.Context, posterID, offerID strin
 }
 
 func (m *marketManager) AnswerAskWithOffer(ctx context.Context, caller, askID, answer, date, note, offerID string, price float64) (Ask, error) {
+	return m.AnswerAskWithMinutes(ctx, caller, askID, answer, date, note, offerID, price, 0)
+}
+
+func (m *marketManager) AnswerAskWithMinutes(ctx context.Context, caller, askID, answer, date, note, offerID string, price float64, minutes int) (Ask, error) {
 	var a Ask
 	if err := m.get(ctx, RoleAsk, askID, &a); err != nil {
 		return a, err
@@ -96,14 +100,17 @@ func (m *marketManager) AnswerAskWithOffer(ctx context.Context, caller, askID, a
 	if a.Answer != models.AnswerWaiting {
 		return a, ErrConflict
 	}
-	if answer == models.AnswerNo && (offerID != "" || price != 0) {
-		return a, fmt.Errorf("%w: a no carries no offer or price", ErrInvalid)
+	if answer == models.AnswerNo && (offerID != "" || price != 0 || minutes != 0) {
+		return a, fmt.Errorf("%w: a no carries no offer, price or minutes", ErrInvalid)
+	}
+	if minutes < 0 {
+		return a, fmt.Errorf("%w: minutes are not negative", ErrInvalid)
 	}
 	if answer == models.AnswerYes {
 		if err := m.quotedOffer(ctx, a.PosterID, offerID, price); err != nil {
 			return a, err
 		}
-		y := Yes{Date: date, Note: note, OfferID: offerID, Price: price}
+		y := Yes{Date: date, Note: note, OfferID: offerID, Price: price, Minutes: minutes}
 		if y.Date == "" {
 			return a, fmt.Errorf("%w: a yes carries a date", ErrInvalid)
 		}

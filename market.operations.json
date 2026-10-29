@@ -337,11 +337,11 @@
     "answer_ask": {
       "method": "POST",
       "path": "/asks/{askID}/answer",
-      "call": "AnswerAskWithOffer",
+      "call": "AnswerAskWithMinutes",
       "action": "market.ask.answer",
       "tool": "market_answer_ask",
       "title": "Answer an ask",
-      "description": "The poster answers yes with a date, or no. A yes may point at one of his offers or quote a price. Silence stays waiting and a reply never opens an order.",
+      "description": "The poster answers yes with a date, or no. A yes may point at one of his offers, quote a price or say how many minutes away he is. Silence stays waiting and a reply never opens an order.",
       "args": [
         {
           "from": "caller",
@@ -378,6 +378,11 @@
           "from": "body",
           "as": "price",
           "description": "A price quoted with yes."
+        },
+        {
+          "from": "body",
+          "as": "minutes",
+          "description": "Minutes away, with yes."
         }
       ],
       "returns": [

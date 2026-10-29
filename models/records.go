@@ -95,6 +95,7 @@ type Yes struct {
 	Note      string  `json:"note,omitempty"`
 	OfferID   string  `json:"offer_id,omitempty"`
 	Price     float64 `json:"price,omitempty"`
+	Minutes   int     `json:"minutes,omitempty"`
 	State     string  `json:"state"`
 	CreatedAt string  `json:"created_at"`
 }
