@@ -582,6 +582,16 @@
           "default": "buy"
         },
         {
+          "name": "promised_date",
+          "type": "string",
+          "description": "The date the poster promises for the whole order."
+        },
+        {
+          "name": "note",
+          "type": "text",
+          "description": "What the poster said with it."
+        },
+        {
           "name": "created_at",
           "type": "timestamp",
           "description": "When the row was created."

@@ -51,6 +51,21 @@ func (m *marketManager) openGroup(ctx context.Context, id string) (GroupOrder, e
 	return g, nil
 }
 
+func (m *marketManager) PromiseGroupOrder(ctx context.Context, caller, id, date, note string) (GroupOrder, error) {
+	var g GroupOrder
+	if err := m.get(ctx, RoleGroupOrder, id, &g); err != nil {
+		return g, err
+	}
+	if _, err := m.posterOwnedBy(ctx, caller, g.PosterID); err != nil {
+		return g, err
+	}
+	if date == "" {
+		return g, fmt.Errorf("%w: a promise carries a date", ErrInvalid)
+	}
+	g.PromisedDate, g.Note = date, note
+	return g, m.update(ctx, RoleGroupOrder, id, g)
+}
+
 func (m *marketManager) myLine(ctx context.Context, groupID, caller string) (*Line, error) {
 	ls, err := listOf[Line](m, m.q(ctx, RoleLine).Where("group_order_id = ? AND picker = ?", groupID, caller), RoleLine)
 	if err != nil || len(ls) == 0 {

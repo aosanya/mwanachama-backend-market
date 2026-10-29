@@ -796,6 +796,43 @@
         }
       ]
     },
+    "promise_group_order": {
+      "method": "POST",
+      "path": "/group-orders/{groupOrderID}/promise",
+      "call": "PromiseGroupOrder",
+      "action": "market.group_order.promise",
+      "tool": "market_promise_group_order",
+      "title": "Promise a group order",
+      "description": "The poster gives the date he promises for the whole order and a note. Saying it again replaces the first.",
+      "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "path",
+          "as": "groupOrderID",
+          "description": "The group order."
+        },
+        {
+          "from": "body",
+          "as": "date",
+          "description": "The date promised.",
+          "required": true
+        },
+        {
+          "from": "body",
+          "as": "note",
+          "description": "A free note."
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ]
+    },
     "answer_revision": {
       "method": "POST",
       "path": "/group-orders/{groupOrderID}/revision/answer",

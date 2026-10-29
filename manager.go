@@ -80,6 +80,7 @@ type MarketManager interface {
 	JoinGroupOrder(ctx context.Context, caller, id string, quantity float64) (Line, error)
 	AskRevision(ctx context.Context, caller, id string, price, minimum float64) (GroupOrder, error)
 	AnswerRevision(ctx context.Context, caller, id, answer string) (Line, error)
+	PromiseGroupOrder(ctx context.Context, caller, id, date, note string) (GroupOrder, error)
 	ListGroupOrders(ctx context.Context, caller string) ([]GroupOrderView, error)
 	GetGroupOrder(ctx context.Context, caller, id string) (GroupOrderView, error)
 }

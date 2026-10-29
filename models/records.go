@@ -125,6 +125,8 @@ type GroupOrder struct {
 	WorkflowVersion int     `json:"workflow_version"`
 	State           string  `json:"state"`
 	Direction       string  `json:"direction"`
+	PromisedDate    string  `json:"promised_date,omitempty"`
+	Note            string  `json:"note,omitempty"`
 	CreatedAt       string  `json:"created_at"`
 }
 

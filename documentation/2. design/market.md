@@ -52,3 +52,6 @@ An order carries `yes_id` and `promised_date`: `market_buy_now` takes an optiona
 ## A manager for one test run (HS280)
 
 `ForRun(runID)` returns a manager that shares the parent's hooks (coordinators, agents, names, workflow source and clock) and reaches every table through a store scoped to the run: it reads and writes the `_test` copy of each table, stamps `run_id` on what it inserts, and reads only rows with that run id, so two runs using the same key never meet and no row is written to a live table. The parent is not changed. An empty run id is refused. The hooks are copied when `ForRun` is called, so a host sets them first. The host removes a run's rows with the shared engine's `RemoveRun`.
+## What the buy and supply inputs needed (HS311 to HS314)
+
+Group order promise (HS311): a group order carries `promised_date` and `note`, both empty until the shop speaks. `market_promise_group_order` takes `date` (required) and an optional `note`, is the poster owner's alone (anyone else gets forbidden), and saying it again replaces the first. Every reader of the group order (`market_get_group_order`, `market_list_group_orders`) sees both fields beside the terms; a picker's own order is still found through her line and the group order, not by a guess.
