@@ -33,4 +33,4 @@ Write no comments of any kind in code. A name, a type or a smaller function carr
 
 ## Status (2026-10-28, HS210)
 
-Built: `market.blueprint.json` (eleven roles), `models/`, `MarketManager` over `specstore` with caller-bound visibility, `market.operations.json` and `routes/` over `dispatch`, `market.wakala.json` with `SpecFor`/`SpecForMount`, two example domains, `cmd/ddl`. Open: M4 (workflow gates) and mounting in wakala-api. See [documentation/2. design/declared-domain.md](documentation/2.%20design/declared-domain.md).
+Built: `market.blueprint.json` (eleven roles), `models/`, `MarketManager` over `specstore` with caller-bound visibility, `market.operations.json` and `routes/` over `dispatch`, `market.wakala.json` with `SpecFor`/`SpecForMount`, two example domains, `cmd/ddl`. Bidding (quotes, agent drafts, the `agent` actor) built 2026-10-29, see [documentation/2. design/bidding.md](documentation/2.%20design/bidding.md). Open: M4 (workflow gates) and mounting in wakala-api. See [documentation/2. design/declared-domain.md](documentation/2.%20design/declared-domain.md).

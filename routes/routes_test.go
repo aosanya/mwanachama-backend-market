@@ -36,8 +36,8 @@ func TestTheDeclaredTableBuildsEveryRoute(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(rs) != 31 {
-		t.Fatalf("want 31 routes, got %d", len(rs))
+	if len(rs) != 38 {
+		t.Fatalf("want 38 routes, got %d", len(rs))
 	}
 }
 
@@ -56,7 +56,7 @@ func TestTheDeclaredToolsCarryTheNamesCallersUse(t *testing.T) {
 	for _, tl := range tools {
 		have[tl.Name] = true
 	}
-	for _, n := range strings.Fields(`market_apply_poster market_list_posters market_list_offers market_create_offer market_update_offer market_set_stock market_list_asks market_answer_ask market_buy_now market_get_order market_list_orders market_cancel_order market_mark_paid market_list_group_orders market_get_group_order market_join_group_order market_ask_revision market_answer_revision market_create_wanted market_ask market_create_notice market_withdraw_notice market_approve_poster market_decline_poster`) {
+	for _, n := range strings.Fields(`market_apply_poster market_list_posters market_list_offers market_create_offer market_update_offer market_set_stock market_list_asks market_answer_ask market_buy_now market_get_order market_list_orders market_cancel_order market_mark_paid market_list_group_orders market_get_group_order market_join_group_order market_ask_revision market_answer_revision market_create_wanted market_ask market_create_notice market_withdraw_notice market_approve_poster market_decline_poster market_send_quote market_list_quotes market_draft_counter market_list_drafts market_send_counter market_revise_quote market_accept_quote`) {
 		if !have[n] {
 			t.Errorf("missing tool %s", n)
 		}

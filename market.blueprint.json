@@ -313,10 +313,11 @@
         {
           "name": "state",
           "type": "enum",
-          "description": "Whether it still stands.",
+          "description": "Whether it still stands, or was sold to one quote.",
           "values": [
             "open",
-            "withdrawn"
+            "withdrawn",
+            "sold"
           ],
           "default": "open"
         },
@@ -742,6 +743,141 @@
           "description": "Reads order.",
           "fields": [
             "order_id"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "quote",
+      "description": "A poster's price on a notice, which the picker may counter and accept.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "description": "Storage key, minted by the server.",
+          "primary": true
+        },
+        {
+          "name": "notice_id",
+          "type": "string",
+          "description": "The notice quoted on.",
+          "required": true
+        },
+        {
+          "name": "poster_id",
+          "type": "string",
+          "description": "The poster quoting.",
+          "required": true
+        },
+        {
+          "name": "picker",
+          "type": "string",
+          "description": "The notice's picker, copied when the quote is sent."
+        },
+        {
+          "name": "price",
+          "type": "float",
+          "description": "The price quoted.",
+          "required": true
+        },
+        {
+          "name": "note",
+          "type": "text",
+          "description": "A free note."
+        },
+        {
+          "name": "counter_price",
+          "type": "float",
+          "description": "The picker's counter, once one is sent."
+        },
+        {
+          "name": "state",
+          "type": "enum",
+          "description": "Where the quote stands.",
+          "values": [
+            "open",
+            "countered",
+            "accepted",
+            "declined"
+          ],
+          "default": "open"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "description": "When the row was created."
+        }
+      ],
+      "indexes": [
+        {
+          "name": "notice",
+          "description": "Reads a notice's quotes.",
+          "fields": [
+            "notice_id"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "draft",
+      "description": "A counter an agent wrote for the picker, which goes nowhere until she sends it.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "description": "Storage key, minted by the server.",
+          "primary": true
+        },
+        {
+          "name": "quote_id",
+          "type": "string",
+          "description": "The quote countered.",
+          "required": true
+        },
+        {
+          "name": "notice_id",
+          "type": "string",
+          "description": "The notice the quote is on.",
+          "required": true
+        },
+        {
+          "name": "author",
+          "type": "string",
+          "description": "The agent who wrote it, bound from the caller."
+        },
+        {
+          "name": "price",
+          "type": "float",
+          "description": "The price proposed.",
+          "required": true
+        },
+        {
+          "name": "note",
+          "type": "text",
+          "description": "What to say with it."
+        },
+        {
+          "name": "state",
+          "type": "enum",
+          "description": "Whether the picker has sent it.",
+          "values": [
+            "waiting",
+            "sent"
+          ],
+          "default": "waiting"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "description": "When the row was created."
+        }
+      ],
+      "indexes": [
+        {
+          "name": "notice",
+          "description": "Reads a notice's drafts.",
+          "fields": [
+            "notice_id"
           ]
         }
       ]

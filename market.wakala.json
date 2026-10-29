@@ -68,6 +68,18 @@
       "name": "trail",
       "table": "trails",
       "description": "Who did what to an order and when."
+    },
+    {
+      "role": "quote",
+      "name": "quote",
+      "table": "quotes",
+      "description": "A poster's price on a notice, which the picker may counter and accept."
+    },
+    {
+      "role": "draft",
+      "name": "draft",
+      "table": "drafts",
+      "description": "A counter an agent wrote for the picker, which goes nowhere until she sends it."
     }
   ]
 }

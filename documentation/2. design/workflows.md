@@ -15,6 +15,10 @@ Investigated read-only in `mwanachama-backend-agency`. A `Workflow` has a name, 
 - Every state-changing act checks the step's named actor against the caller and answers `ErrForbidden`: approve, decline or remove a poster, start a group order, the poster's yes, mark paid, cancel. A group order's coordinator is the one who started it.
 - Cancel defaults to at once by the picker and closes the picker's open yeses at that poster. A source that replaces Cancel names its own actor and decides whether the yes closes.
 
+## Bidding
+
+A fifth default, Bidding (quoted: poster, drafted: agent, countered: picker, accepted: picker), gates the notice-and-quote journey. See [bidding.md](bidding.md).
+
 ## Not built
 
 The group order's open, send and per-line paid steps have no manager methods yet, so they are not gated. The group order default lists only start and paid.

@@ -827,6 +827,216 @@
           "body": true
         }
       ]
+    },
+    "send_quote": {
+      "method": "POST",
+      "path": "/notices/{noticeID}/quotes",
+      "call": "SendQuote",
+      "action": "market.quote.send",
+      "tool": "market_send_quote",
+      "title": "Send a quote",
+      "description": "A poster prices an open notice. One quote stands per poster on a notice.",
+      "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "path",
+          "as": "noticeID",
+          "description": "The notice."
+        },
+        {
+          "from": "body",
+          "whole": true
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ],
+      "status": 201
+    },
+    "list_quotes": {
+      "method": "GET",
+      "path": "/notices/{noticeID}/quotes",
+      "call": "ListQuotes",
+      "action": "market.quote.list",
+      "tool": "market_list_quotes",
+      "title": "List quotes",
+      "description": "The notice's picker sees every quote on it; a poster sees only his own.",
+      "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "path",
+          "as": "noticeID",
+          "description": "The notice."
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ]
+    },
+    "draft_counter": {
+      "method": "POST",
+      "path": "/quotes/{quoteID}/drafts",
+      "call": "DraftCounter",
+      "action": "market.draft.create",
+      "tool": "market_draft_counter",
+      "title": "Draft a counter",
+      "description": "An agent writes a counter for the picker to read. Nothing reaches the poster until the picker sends it.",
+      "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "path",
+          "as": "quoteID",
+          "description": "The quote."
+        },
+        {
+          "from": "body",
+          "as": "price",
+          "description": "The price proposed.",
+          "required": true
+        },
+        {
+          "from": "body",
+          "as": "note",
+          "description": "What to say with it."
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ],
+      "status": 201
+    },
+    "list_drafts": {
+      "method": "GET",
+      "path": "/notices/{noticeID}/drafts",
+      "call": "ListDrafts",
+      "action": "market.draft.list",
+      "tool": "market_list_drafts",
+      "title": "List drafts",
+      "description": "The notice's picker and the agent who wrote a draft see it; nobody else does.",
+      "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "path",
+          "as": "noticeID",
+          "description": "The notice."
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ]
+    },
+    "send_counter": {
+      "method": "POST",
+      "path": "/drafts/{draftID}/send",
+      "call": "SendCounter",
+      "action": "market.counter.send",
+      "tool": "market_send_counter",
+      "title": "Send a counter",
+      "description": "The picker sends a draft to the poster as her counter.",
+      "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "path",
+          "as": "draftID",
+          "description": "The draft."
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ]
+    },
+    "revise_quote": {
+      "method": "POST",
+      "path": "/quotes/{quoteID}/revise",
+      "call": "ReviseQuote",
+      "action": "market.quote.revise",
+      "tool": "market_revise_quote",
+      "title": "Revise a quote",
+      "description": "The poster answers a counter with a new price.",
+      "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "path",
+          "as": "quoteID",
+          "description": "The quote."
+        },
+        {
+          "from": "body",
+          "as": "price",
+          "description": "The new price.",
+          "required": true
+        },
+        {
+          "from": "body",
+          "as": "note",
+          "description": "A free note."
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ]
+    },
+    "accept_quote": {
+      "method": "POST",
+      "path": "/quotes/{quoteID}/accept",
+      "call": "AcceptQuote",
+      "action": "market.quote.accept",
+      "tool": "market_accept_quote",
+      "title": "Accept a quote",
+      "description": "The picker accepts one open quote at its price. The notice is sold and the other quotes are declined.",
+      "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "path",
+          "as": "quoteID",
+          "description": "The quote."
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ]
     }
   },
   "errors": {

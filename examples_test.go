@@ -42,9 +42,9 @@ func TestTwoDomainsCoexist(t *testing.T) {
 		}
 	}
 	var n int64
-	db.Raw("select count(*) from sqlite_master where type='table' and name not like '%spec_table_names'").Scan(&n)
-	if n != 22 {
-		t.Fatalf("want 22 tables, got %d", n)
+	db.Raw(`select count(*) from sqlite_master where type='table' and name not like '%spec_table_names' and name not like '%\_test' escape '\'`).Scan(&n)
+	if n != 26 {
+		t.Fatalf("want 26 tables, got %d", n)
 	}
 }
 

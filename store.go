@@ -13,6 +13,8 @@ const (
 	RoleRequest    = "request"
 	RoleAsk        = "ask"
 	RoleNotice     = "notice"
+	RoleQuote      = "quote"
+	RoleDraft      = "draft"
 	RoleYes        = "yes"
 	RoleOrder      = "order"
 	RoleGroupOrder = "group_order"

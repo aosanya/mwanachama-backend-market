@@ -11,12 +11,14 @@ const (
 	WhoPicker      = "picker"
 	WhoPoster      = "poster"
 	WhoCoordinator = "coordinator"
+	WhoAgent       = "agent"
 	WhoNone        = "none"
 
 	WorkflowBuyNow        = "buy_now"
 	WorkflowCancel        = "cancel"
 	WorkflowGroupOrder    = "group_order"
 	WorkflowApprovePoster = "approve_poster"
+	WorkflowBidding       = "bidding"
 
 	StepAsked     = "asked"
 	StepYes       = "yes"
@@ -24,6 +26,10 @@ const (
 	StepCancelled = "cancelled"
 	StepStart     = "start"
 	StepApproved  = "approved"
+	StepQuoted    = "quoted"
+	StepDrafted   = "drafted"
+	StepCountered = "countered"
+	StepAccepted  = "accepted"
 )
 
 type Step struct {
@@ -42,6 +48,8 @@ type WorkflowSource func(ctx context.Context, name string, version int) (Workflo
 
 type CoordinatorCheck func(ctx context.Context, caller string) bool
 
+type AgentCheck func(ctx context.Context, caller string) bool
+
 func DefaultWorkflows() []Workflow {
 	return []Workflow{
 		{Name: WorkflowBuyNow, Version: 1, Steps: []Step{
@@ -50,6 +58,9 @@ func DefaultWorkflows() []Workflow {
 		{Name: WorkflowGroupOrder, Version: 1, Steps: []Step{
 			{Name: StepStart, Who: WhoCoordinator}, {Name: StepPaid, Who: WhoCoordinator}}},
 		{Name: WorkflowApprovePoster, Version: 1, Steps: []Step{{Name: StepApproved, Who: WhoCoordinator}}},
+		{Name: WorkflowBidding, Version: 1, Steps: []Step{
+			{Name: StepQuoted, Who: WhoPoster}, {Name: StepDrafted, Who: WhoAgent},
+			{Name: StepCountered, Who: WhoPicker}, {Name: StepAccepted, Who: WhoPicker}}},
 	}
 }
 
@@ -68,6 +79,8 @@ func (m *marketManager) UseNames(n NameOf) { m.names = n }
 
 func (m *marketManager) UseCoordinators(c CoordinatorCheck) { m.coordinators = c }
 
+func (m *marketManager) UseAgents(a AgentCheck) { m.agents = a }
+
 type NameOf func(ctx context.Context, id string) string
 
 func (m *marketManager) nameOf(ctx context.Context, id string) string {
@@ -78,7 +91,7 @@ func (m *marketManager) nameOf(ctx context.Context, id string) string {
 }
 
 func validWho(who string) bool {
-	return who == WhoPicker || who == WhoPoster || who == WhoCoordinator || who == WhoNone
+	return who == WhoPicker || who == WhoPoster || who == WhoCoordinator || who == WhoAgent || who == WhoNone
 }
 
 func (w Workflow) valid() bool {
@@ -151,6 +164,8 @@ func (m *marketManager) isWho(ctx context.Context, who, caller string, p parties
 			return p.coordinator == caller
 		}
 		return m.coordinators != nil && m.coordinators(ctx, caller)
+	case WhoAgent:
+		return m.agents != nil && m.agents(ctx, caller)
 	}
 	return false
 }

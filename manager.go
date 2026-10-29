@@ -20,6 +20,8 @@ type Offer = models.Offer
 type Request = models.Request
 type Ask = models.Ask
 type Notice = models.Notice
+type Quote = models.Quote
+type Draft = models.Draft
 type Yes = models.Yes
 type Order = models.Order
 type GroupOrder = models.GroupOrder
@@ -31,6 +33,7 @@ type GroupOrderView = models.GroupOrderView
 type MarketManager interface {
 	UseWorkflows(s WorkflowSource)
 	UseCoordinators(c CoordinatorCheck)
+	UseAgents(a AgentCheck)
 	UseNames(n NameOf)
 
 	ApplyPoster(ctx context.Context, caller string, p Poster) (Poster, error)
@@ -53,6 +56,14 @@ type MarketManager interface {
 	CreateNotice(ctx context.Context, caller string, n Notice) (Notice, error)
 	WithdrawNotice(ctx context.Context, caller, id string) (Notice, error)
 	ListNotices(ctx context.Context) ([]Notice, error)
+
+	SendQuote(ctx context.Context, caller, noticeID string, q Quote) (Quote, error)
+	ListQuotes(ctx context.Context, caller, noticeID string) ([]Quote, error)
+	DraftCounter(ctx context.Context, caller, quoteID string, price float64, note string) (Draft, error)
+	ListDrafts(ctx context.Context, caller, noticeID string) ([]Draft, error)
+	SendCounter(ctx context.Context, caller, draftID string) (Quote, error)
+	ReviseQuote(ctx context.Context, caller, quoteID string, price float64, note string) (Quote, error)
+	AcceptQuote(ctx context.Context, caller, quoteID string) (Quote, error)
 
 	BuyNow(ctx context.Context, caller, offerID string, quantity float64, yesID string) (Order, error)
 	CancelOrder(ctx context.Context, caller, id string) (Order, error)
@@ -79,6 +90,7 @@ type marketManager struct {
 
 	source       WorkflowSource
 	coordinators CoordinatorCheck
+	agents       AgentCheck
 	names        NameOf
 }
 
@@ -89,6 +101,8 @@ func NewMarketManager(db *gorm.DB, s *spec.Spec) (MarketManager, error) {
 		RoleRequest:    models.Request{},
 		RoleAsk:        models.Ask{},
 		RoleNotice:     models.Notice{},
+		RoleQuote:      models.Quote{},
+		RoleDraft:      models.Draft{},
 		RoleYes:        models.Yes{},
 		RoleOrder:      models.Order{},
 		RoleGroupOrder: models.GroupOrder{},
