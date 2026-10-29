@@ -136,7 +136,7 @@ func (m *marketManager) view(ctx context.Context, caller string, g GroupOrder) (
 		}
 	}
 	_, posterErr := m.posterOwnedBy(ctx, caller, g.PosterID)
-	seesAll := (g.Coordinator == caller && caller != "") || posterErr == nil
+	seesAll := (g.Coordinator == caller && caller != "") || posterErr == nil || m.isWho(ctx, WhoCoordinator, caller, parties{})
 	for _, l := range lines {
 		if seesAll || (l.Picker == caller && caller != "") {
 			v.Lines = append(v.Lines, l)

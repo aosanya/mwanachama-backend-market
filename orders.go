@@ -128,8 +128,13 @@ func (m *marketManager) ListOrders(ctx context.Context, caller string) ([]Order,
 }
 
 func (m *marketManager) OrderTrail(ctx context.Context, caller, orderID string) ([]Trail, error) {
-	if _, _, err := m.visibleOrder(ctx, caller, orderID); err != nil {
+	var o Order
+	if err := m.get(ctx, RoleOrder, orderID, &o); err != nil {
 		return nil, err
+	}
+	ownTrail := o.Picker == caller && caller != ""
+	if !ownTrail && !m.isWho(ctx, WhoCoordinator, caller, parties{}) {
+		return nil, ErrNotFound
 	}
 	return listOf[Trail](m, m.q(ctx, RoleTrail).Where("order_id = ?", orderID), RoleTrail)
 }

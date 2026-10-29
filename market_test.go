@@ -171,3 +171,41 @@ func TestAnAwayPosterIsNotAskedAndIsAskableAgainWhenAvailable(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestAnOrderTrailIsThePickersAndTheCoordinatorsNeverThePostersOrAStrangers(t *testing.T) {
+	m, ctx := newManager(t)
+	p := approvedPoster(t, m, ctx, "ann")
+	o, err := m.CreateOffer(ctx, "ann", market.Offer{PosterID: p.ID, ProductWords: "seed", Price: 5})
+	if err != nil {
+		t.Fatal(err)
+	}
+	ord, err := m.BuyNow(ctx, "bea", o.ID, 2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, c := range []string{"bea", "coordinator"} {
+		if tr, err := m.OrderTrail(ctx, c, ord.ID); err != nil || len(tr) == 0 {
+			t.Fatalf("%s trail %v %v", c, tr, err)
+		}
+	}
+	for _, c := range []string{"ann", "cat", ""} {
+		if tr, err := m.OrderTrail(ctx, c, ord.ID); err == nil || len(tr) != 0 {
+			t.Fatalf("%q read the trail: %v %v", c, tr, err)
+		}
+	}
+}
+
+func TestAnyCoordinatorSeesEveryLineOfAGroupOrder(t *testing.T) {
+	m, ctx := newManager(t)
+	p := approvedPoster(t, m, ctx, "ann")
+	g, err := m.StartGroupOrder(ctx, "coord", market.GroupOrder{PosterID: p.ID, Price: 3, Minimum: 10})
+	if err != nil {
+		t.Fatal(err)
+	}
+	m.JoinGroupOrder(ctx, "bea", g.ID, 4)
+	m.JoinGroupOrder(ctx, "cat", g.ID, 6)
+	v, err := m.GetGroupOrder(ctx, "coordinator", g.ID)
+	if err != nil || len(v.Lines) != 2 {
+		t.Fatalf("a second coordinator sees %d lines, %v", len(v.Lines), err)
+	}
+}
