@@ -261,6 +261,32 @@
       ],
       "status": 201
     },
+    "get_request": {
+      "method": "GET",
+      "path": "/requests/{requestID}",
+      "call": "GetRequest",
+      "action": "market.request.read",
+      "tool": "market_get_request",
+      "title": "Read a request",
+      "description": "The picker who made it, or a poster who was asked about it, reads what is wanted.",
+      "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "path",
+          "as": "requestID",
+          "description": "The request."
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ]
+    },
     "ask": {
       "method": "POST",
       "path": "/asks",

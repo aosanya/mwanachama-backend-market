@@ -36,8 +36,8 @@ func TestTheDeclaredTableBuildsEveryRoute(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(rs) != 39 {
-		t.Fatalf("want 39 routes, got %d", len(rs))
+	if len(rs) != 40 {
+		t.Fatalf("want 40 routes, got %d", len(rs))
 	}
 }
 

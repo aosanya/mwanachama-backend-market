@@ -55,3 +55,5 @@ An order carries `yes_id` and `promised_date`: `market_buy_now` takes an optiona
 ## What the buy and supply inputs needed (HS311 to HS314)
 
 Group order promise (HS311): a group order carries `promised_date` and `note`, both empty until the shop speaks. `market_promise_group_order` takes `date` (required) and an optional `note`, is the poster owner's alone (anyone else gets forbidden), and saying it again replaces the first. Every reader of the group order (`market_get_group_order`, `market_list_group_orders`) sees both fields beside the terms; a picker's own order is still found through her line and the group order, not by a guess.
+
+Read one request (HS312): `market_get_request` takes the request id and returns it. The picker who made it reads it, and so does a poster owner who was asked about it (he has an ask on it); anyone else gets not found, the same as an unknown id. Opening a request on a fresh page no longer depends on having just created it.

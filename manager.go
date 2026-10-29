@@ -49,6 +49,7 @@ type MarketManager interface {
 	ListOffers(ctx context.Context, posterID string) ([]Offer, error)
 
 	CreateRequest(ctx context.Context, caller string, r Request) (Request, error)
+	GetRequest(ctx context.Context, caller, id string) (Request, error)
 	CreateAsk(ctx context.Context, caller string, a Ask) (Ask, error)
 	AnswerAsk(ctx context.Context, caller, askID, answer, date, note string) (Ask, error)
 	ListAsks(ctx context.Context, caller string) ([]Ask, error)

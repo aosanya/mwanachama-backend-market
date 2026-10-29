@@ -15,6 +15,30 @@ func (m *marketManager) CreateRequest(ctx context.Context, caller string, r Requ
 	return r, m.insert(ctx, RoleRequest, r)
 }
 
+func (m *marketManager) GetRequest(ctx context.Context, caller, id string) (Request, error) {
+	var r Request
+	if err := m.get(ctx, RoleRequest, id, &r); err != nil {
+		return r, err
+	}
+	if caller != "" && r.Picker == caller {
+		return r, nil
+	}
+	owned, err := m.ownedPosters(ctx, caller)
+	if err != nil {
+		return r, err
+	}
+	asks, err := listOf[Ask](m, m.q(ctx, RoleAsk).Where("request_id = ?", id), RoleAsk)
+	if err != nil {
+		return r, err
+	}
+	for _, a := range asks {
+		if owned[a.PosterID] {
+			return r, nil
+		}
+	}
+	return r, ErrNotFound
+}
+
 func (m *marketManager) CreateAsk(ctx context.Context, caller string, a Ask) (Ask, error) {
 	var p Poster
 	if err := m.get(ctx, RolePoster, a.PosterID, &p); err != nil {
