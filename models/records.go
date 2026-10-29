@@ -93,6 +93,8 @@ type Yes struct {
 	Quantity  float64 `json:"quantity,omitempty"`
 	Date      string  `json:"date,omitempty"`
 	Note      string  `json:"note,omitempty"`
+	OfferID   string  `json:"offer_id,omitempty"`
+	Price     float64 `json:"price,omitempty"`
 	State     string  `json:"state"`
 	CreatedAt string  `json:"created_at"`
 }

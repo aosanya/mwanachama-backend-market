@@ -389,6 +389,16 @@
           "description": "A free note."
         },
         {
+          "name": "offer_id",
+          "type": "string",
+          "description": "The poster's offer that this yes points at, when he names one."
+        },
+        {
+          "name": "price",
+          "type": "float",
+          "description": "The price he quotes for it, when he gives one."
+        },
+        {
           "name": "state",
           "type": "enum",
           "description": "Where the yes stands.",
