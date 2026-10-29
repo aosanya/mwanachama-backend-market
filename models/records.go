@@ -60,6 +60,29 @@ type Notice struct {
 	CreatedAt string  `json:"created_at"`
 }
 
+type Quote struct {
+	ID           string  `json:"id"`
+	NoticeID     string  `json:"notice_id"`
+	PosterID     string  `json:"poster_id"`
+	Picker       string  `json:"picker,omitempty"`
+	Price        float64 `json:"price"`
+	Note         string  `json:"note,omitempty"`
+	CounterPrice float64 `json:"counter_price,omitempty"`
+	State        string  `json:"state"`
+	CreatedAt    string  `json:"created_at"`
+}
+
+type Draft struct {
+	ID        string  `json:"id"`
+	QuoteID   string  `json:"quote_id"`
+	NoticeID  string  `json:"notice_id"`
+	Author    string  `json:"author,omitempty"`
+	Price     float64 `json:"price"`
+	Note      string  `json:"note,omitempty"`
+	State     string  `json:"state"`
+	CreatedAt string  `json:"created_at"`
+}
+
 type Yes struct {
 	ID        string  `json:"id"`
 	AskID     string  `json:"ask_id"`

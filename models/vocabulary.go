@@ -15,6 +15,15 @@ const (
 
 	NoticeOpen      = "open"
 	NoticeWithdrawn = "withdrawn"
+	NoticeSold      = "sold"
+
+	QuoteOpen      = "open"
+	QuoteCountered = "countered"
+	QuoteAccepted  = "accepted"
+	QuoteDeclined  = "declined"
+
+	DraftWaiting = "waiting"
+	DraftSent    = "sent"
 
 	YesOpen      = "open"
 	YesDelivered = "delivered"
