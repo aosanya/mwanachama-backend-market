@@ -1,15 +1,17 @@
 package models
 
 type Poster struct {
-	ID           string `json:"id"`
-	Name         string `json:"name"`
-	Area         string `json:"area,omitempty"`
-	Posts        string `json:"posts,omitempty"`
-	Owner        string `json:"owner,omitempty"`
-	ApprovedBy   string `json:"approved_by,omitempty"`
-	Status       string `json:"status"`
-	Availability string `json:"availability"`
-	CreatedAt    string `json:"created_at"`
+	ID             string `json:"id"`
+	Name           string `json:"name"`
+	Area           string `json:"area,omitempty"`
+	Posts          string `json:"posts,omitempty"`
+	Owner          string `json:"owner,omitempty"`
+	ApprovedBy     string `json:"approved_by,omitempty"`
+	OwnerName      string `json:"owner_name,omitempty" spec:"-"`
+	ApprovedByName string `json:"approved_by_name,omitempty" spec:"-"`
+	Status         string `json:"status"`
+	Availability   string `json:"availability"`
+	CreatedAt      string `json:"created_at"`
 }
 
 type Offer struct {

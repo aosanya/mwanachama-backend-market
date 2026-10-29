@@ -65,3 +65,38 @@ func TestReadsCarryThePickersNameWhenTheHostSuppliesOne(t *testing.T) {
 		t.Fatalf("%q %q %q %q", asks[0].PickerName, orders[0].PickerName, got.PickerName, view.Lines[0].PickerName)
 	}
 }
+
+func TestPosterReadsCarryTheOwnerAndApproverNamesWhenTheHostSuppliesOne(t *testing.T) {
+	m, ctx := newManager(t)
+	p := approvedPoster(t, m, ctx, "ann")
+	applied, _ := m.ApplyPoster(ctx, "cat", market.Poster{Name: "Cat's farm"})
+	if p.OwnerName != "" || applied.OwnerName != "" {
+		t.Fatal("no names were supplied")
+	}
+	list, _ := m.ListPosters(ctx, "")
+	for _, x := range list {
+		if x.OwnerName != "" || x.ApprovedByName != "" {
+			t.Fatalf("no names were supplied: %+v", x)
+		}
+	}
+	m.UseNames(upperNames)
+	list, _ = m.ListPosters(ctx, "")
+	byOwner := map[string]market.Poster{}
+	for _, x := range list {
+		byOwner[x.Owner] = x
+	}
+	if byOwner["ann"].OwnerName != "Name of ann" || byOwner["ann"].ApprovedByName != "Name of "+byOwner["ann"].ApprovedBy || byOwner["ann"].ApprovedBy == "" {
+		t.Fatalf("approved %+v", byOwner["ann"])
+	}
+	if byOwner["cat"].OwnerName != "Name of cat" || byOwner["cat"].ApprovedByName != "" {
+		t.Fatalf("waiting %+v", byOwner["cat"])
+	}
+	got, err := m.SetAvailability(ctx, "ann", p.ID, models.Available)
+	if err != nil || got.OwnerName != "Name of ann" {
+		t.Fatalf("set availability %+v %v", got, err)
+	}
+	again, err := m.ApplyPoster(ctx, "dee", market.Poster{Name: "Dee"})
+	if err != nil || again.OwnerName != "Name of dee" {
+		t.Fatalf("apply %+v %v", again, err)
+	}
+}

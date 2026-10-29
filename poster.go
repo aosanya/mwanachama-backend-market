@@ -16,7 +16,16 @@ func (m *marketManager) ApplyPoster(ctx context.Context, caller string, p Poster
 	if err := m.checks(RolePoster, p); err != nil {
 		return p, err
 	}
-	return p, m.insert(ctx, RolePoster, p)
+	if err := m.insert(ctx, RolePoster, p); err != nil {
+		return p, err
+	}
+	return m.named(ctx, p), nil
+}
+
+func (m *marketManager) named(ctx context.Context, p Poster) Poster {
+	p.OwnerName = m.nameOf(ctx, p.Owner)
+	p.ApprovedByName = m.nameOf(ctx, p.ApprovedBy)
+	return p
 }
 
 func (m *marketManager) ListPosters(ctx context.Context, status string) ([]Poster, error) {
@@ -24,7 +33,11 @@ func (m *marketManager) ListPosters(ctx context.Context, status string) ([]Poste
 	if status != "" {
 		q = q.Where("status = ?", status)
 	}
-	return listOf[Poster](m, q, RolePoster)
+	ps, err := listOf[Poster](m, q, RolePoster)
+	for i := range ps {
+		ps[i] = m.named(ctx, ps[i])
+	}
+	return ps, err
 }
 
 func (m *marketManager) setStatus(ctx context.Context, caller, id, status string) (Poster, error) {
@@ -39,7 +52,10 @@ func (m *marketManager) setStatus(ctx context.Context, caller, id, status string
 	if status == models.PosterApproved {
 		p.ApprovedBy = caller
 	}
-	return p, m.update(ctx, RolePoster, id, p)
+	if err := m.update(ctx, RolePoster, id, p); err != nil {
+		return p, err
+	}
+	return m.named(ctx, p), nil
 }
 
 func (m *marketManager) ApprovePoster(ctx context.Context, caller, id string) (Poster, error) {
@@ -63,7 +79,10 @@ func (m *marketManager) SetAvailability(ctx context.Context, caller, id, availab
 	if err := m.checks(RolePoster, p); err != nil {
 		return p, err
 	}
-	return p, m.update(ctx, RolePoster, id, p)
+	if err := m.update(ctx, RolePoster, id, p); err != nil {
+		return p, err
+	}
+	return m.named(ctx, p), nil
 }
 
 func (m *marketManager) CreateOffer(ctx context.Context, caller string, o Offer) (Offer, error) {

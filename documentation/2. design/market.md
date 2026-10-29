@@ -47,4 +47,4 @@ It asks, tells, drafts and records. It never says yes for a person, sends nothin
 
 ## Yes on the order, and names on reads (HS270)
 
-An order carries `yes_id` and `promised_date`: `market_buy_now` takes an optional `yes_id`, which must be the caller's own open yes at the same poster, and the order keeps that id and the yes's date. The module stores no names and knows no people. A host that wants a picker shown by name calls `UseNames` with a `NameOf` function; asks, orders and group order lines then come back with a derived `picker_name` (never a column), empty when no function is supplied.
+An order carries `yes_id` and `promised_date`: `market_buy_now` takes an optional `yes_id`, which must be the caller's own open yes at the same poster, and the order keeps that id and the yes's date. The module stores no names and knows no people. A host that wants a picker shown by name calls `UseNames` with a `NameOf` function; asks, orders and group order lines then come back with a derived `picker_name`, and posters with `owner_name` and `approved_by_name` (never columns), all empty when no function is supplied or the id is unknown.

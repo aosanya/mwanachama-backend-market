@@ -7,7 +7,7 @@
       "action": "market.poster.apply",
       "tool": "market_apply_poster",
       "title": "Apply to post",
-      "description": "A poster applies and waits to be approved. The applicant is the caller.",
+      "description": "A poster applies and waits to be approved. The applicant is the caller. A poster read carries owner_name and approved_by_name when the host supplies names.",
       "args": [
         {
           "from": "caller",
@@ -33,7 +33,7 @@
       "action": "market.poster.list",
       "tool": "market_list_posters",
       "title": "List posters",
-      "description": "List posters, optionally by status.",
+      "description": "List posters, optionally by status. Each carries owner_name and approved_by_name when the host supplies names.",
       "args": [
         {
           "from": "query",
