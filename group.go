@@ -139,6 +139,7 @@ func (m *marketManager) view(ctx context.Context, caller string, g GroupOrder) (
 	seesAll := (g.Coordinator == caller && caller != "") || posterErr == nil || m.isWho(ctx, WhoCoordinator, caller, parties{})
 	for _, l := range lines {
 		if seesAll || (l.Picker == caller && caller != "") {
+			l.PickerName = m.nameOf(ctx, l.Picker)
 			v.Lines = append(v.Lines, l)
 		}
 	}

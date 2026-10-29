@@ -69,6 +69,7 @@ func (m *marketManager) AnswerAsk(ctx context.Context, caller, askID, answer, da
 		}
 	}
 	a.Answer, a.AnsweredAt = answer, m.now()
+	a.PickerName = m.nameOf(ctx, a.Picker)
 	return a, m.update(ctx, RoleAsk, a.ID, a)
 }
 
@@ -84,6 +85,7 @@ func (m *marketManager) ListAsks(ctx context.Context, caller string) ([]Ask, err
 	var out []Ask
 	for _, a := range all {
 		if a.Picker == caller || owned[a.PosterID] {
+			a.PickerName = m.nameOf(ctx, a.Picker)
 			out = append(out, a)
 		}
 	}

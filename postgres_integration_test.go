@@ -70,7 +70,7 @@ func TestPG_ABuyNowRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatalf("offer: %v", err)
 	}
-	ord, err := m.BuyNow(ctx, "bea", o.ID, 2)
+	ord, err := m.BuyNow(ctx, "bea", o.ID, 2, "")
 	if err != nil {
 		t.Fatalf("buy now: %v", err)
 	}

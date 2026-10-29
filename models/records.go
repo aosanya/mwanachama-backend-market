@@ -43,6 +43,7 @@ type Ask struct {
 	Question   string `json:"question"`
 	Answer     string `json:"answer"`
 	Detail     string `json:"detail,omitempty"`
+	PickerName string `json:"picker_name,omitempty" spec:"-"`
 	CreatedAt  string `json:"created_at"`
 	AnsweredAt string `json:"answered_at,omitempty"`
 }
@@ -81,6 +82,9 @@ type Order struct {
 	WorkflowVersion int     `json:"workflow_version"`
 	State           string  `json:"state"`
 	Paid            bool    `json:"paid"`
+	YesID           string  `json:"yes_id,omitempty"`
+	PromisedDate    string  `json:"promised_date,omitempty"`
+	PickerName      string  `json:"picker_name,omitempty" spec:"-"`
 	CreatedAt       string  `json:"created_at"`
 }
 
@@ -108,6 +112,7 @@ type Line struct {
 	AnsweredVersion      int     `json:"answered_version"`
 	DecidedByCoordinator bool    `json:"decided_by_coordinator"`
 	Paid                 bool    `json:"paid"`
+	PickerName           string  `json:"picker_name,omitempty" spec:"-"`
 	CreatedAt            string  `json:"created_at"`
 }
 

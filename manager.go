@@ -31,6 +31,7 @@ type GroupOrderView = models.GroupOrderView
 type MarketManager interface {
 	UseWorkflows(s WorkflowSource)
 	UseCoordinators(c CoordinatorCheck)
+	UseNames(n NameOf)
 
 	ApplyPoster(ctx context.Context, caller string, p Poster) (Poster, error)
 	ListPosters(ctx context.Context, status string) ([]Poster, error)
@@ -53,7 +54,7 @@ type MarketManager interface {
 	WithdrawNotice(ctx context.Context, caller, id string) (Notice, error)
 	ListNotices(ctx context.Context) ([]Notice, error)
 
-	BuyNow(ctx context.Context, caller, offerID string, quantity float64) (Order, error)
+	BuyNow(ctx context.Context, caller, offerID string, quantity float64, yesID string) (Order, error)
 	CancelOrder(ctx context.Context, caller, id string) (Order, error)
 	MarkPaid(ctx context.Context, caller, id string) (Order, error)
 	GetOrder(ctx context.Context, caller, id string) (Order, error)
@@ -78,6 +79,7 @@ type marketManager struct {
 
 	source       WorkflowSource
 	coordinators CoordinatorCheck
+	names        NameOf
 }
 
 func NewMarketManager(db *gorm.DB, s *spec.Spec) (MarketManager, error) {

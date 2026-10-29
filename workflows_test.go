@@ -43,7 +43,7 @@ func placed(t *testing.T, m market.MarketManager, ctx context.Context) (market.P
 	if err != nil {
 		t.Fatal(err)
 	}
-	ord, err := m.BuyNow(ctx, "bea", o.ID, 2)
+	ord, err := m.BuyNow(ctx, "bea", o.ID, 2, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -161,7 +161,7 @@ func TestAnUnusableWorkflowFromTheSourceIsRefused(t *testing.T) {
 	m.UseWorkflows(func(_ context.Context, name string, _ int) (market.Workflow, bool, error) {
 		return market.Workflow{Name: name, Version: 1, Steps: []market.Step{{Name: "x", Who: "anyone"}}}, true, nil
 	})
-	if _, err := m.BuyNow(ctx, "bea", o.ID, 1); !errors.Is(err, market.ErrInvalid) {
+	if _, err := m.BuyNow(ctx, "bea", o.ID, 1, ""); !errors.Is(err, market.ErrInvalid) {
 		t.Fatalf("want invalid, got %v", err)
 	}
 }

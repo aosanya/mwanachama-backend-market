@@ -15,7 +15,7 @@ func TestAnOrderKeepsThePriceItStartedWithAfterTheOfferChanges(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	ord, err := m.BuyNow(ctx, "bea", o.ID, 2)
+	ord, err := m.BuyNow(ctx, "bea", o.ID, 2, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -72,7 +72,7 @@ func TestOnlyThePosterAnswersHisAskAndMarksPaid(t *testing.T) {
 	m, ctx := newManager(t)
 	p := approvedPoster(t, m, ctx, "ann")
 	o, _ := m.CreateOffer(ctx, "ann", market.Offer{PosterID: p.ID, ProductWords: "beans", Price: 1})
-	ord, _ := m.BuyNow(ctx, "bea", o.ID, 1)
+	ord, _ := m.BuyNow(ctx, "bea", o.ID, 1, "")
 	if _, err := m.MarkPaid(ctx, "bea", ord.ID); !errors.Is(err, market.ErrForbidden) {
 		t.Fatalf("picker marked paid: %v", err)
 	}
@@ -179,7 +179,7 @@ func TestAnOrderTrailIsThePickersAndTheCoordinatorsNeverThePostersOrAStrangers(t
 	if err != nil {
 		t.Fatal(err)
 	}
-	ord, err := m.BuyNow(ctx, "bea", o.ID, 2)
+	ord, err := m.BuyNow(ctx, "bea", o.ID, 2, "")
 	if err != nil {
 		t.Fatal(err)
 	}

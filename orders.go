@@ -14,7 +14,7 @@ func unitPrice(o Offer, quantity float64) float64 {
 	return o.Price
 }
 
-func (m *marketManager) BuyNow(ctx context.Context, caller, offerID string, quantity float64) (Order, error) {
+func (m *marketManager) BuyNow(ctx context.Context, caller, offerID string, quantity float64, yesID string) (Order, error) {
 	var o Offer
 	if err := m.get(ctx, RoleOffer, offerID, &o); err != nil {
 		return Order{}, err
@@ -33,9 +33,20 @@ func (m *marketManager) BuyNow(ctx context.Context, caller, offerID string, quan
 	if err != nil {
 		return Order{}, err
 	}
+	var promised string
+	if yesID != "" {
+		var y Yes
+		if err := m.get(ctx, RoleYes, yesID, &y); err != nil || y.Picker != caller {
+			return Order{}, ErrNotFound
+		}
+		if y.State != models.YesOpen || y.PosterID != o.PosterID {
+			return Order{}, ErrConflict
+		}
+		promised = y.Date
+	}
 	ord := Order{ID: newID(), Picker: caller, PosterID: o.PosterID, OfferID: o.ID, Product: o.Product,
 		Quantity: quantity, UnitPrice: unitPrice(o, quantity), WorkflowVersion: wf.Version,
-		State: models.OrderPlaced, CreatedAt: m.now()}
+		State: models.OrderPlaced, YesID: yesID, PromisedDate: promised, CreatedAt: m.now()}
 	if ord.Product == "" {
 		ord.Product = o.ProductWords
 	}
@@ -45,6 +56,7 @@ func (m *marketManager) BuyNow(ctx context.Context, caller, offerID string, quan
 	if err := m.insert(ctx, RoleOrder, ord); err != nil {
 		return ord, err
 	}
+	ord.PickerName = m.nameOf(ctx, ord.Picker)
 	return ord, m.note(ctx, ord.ID, caller, "placed")
 }
 
@@ -106,6 +118,7 @@ func (m *marketManager) MarkPaid(ctx context.Context, caller, id string) (Order,
 
 func (m *marketManager) GetOrder(ctx context.Context, caller, id string) (Order, error) {
 	o, _, err := m.visibleOrder(ctx, caller, id)
+	o.PickerName = m.nameOf(ctx, o.Picker)
 	return o, err
 }
 
@@ -121,6 +134,7 @@ func (m *marketManager) ListOrders(ctx context.Context, caller string) ([]Order,
 	var out []Order
 	for _, o := range all {
 		if (o.Picker == caller && caller != "") || owned[o.PosterID] {
+			o.PickerName = m.nameOf(ctx, o.Picker)
 			out = append(out, o)
 		}
 	}

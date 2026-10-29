@@ -64,7 +64,18 @@ func defaultWorkflow(name string) (Workflow, bool) {
 
 func (m *marketManager) UseWorkflows(s WorkflowSource) { m.source = s }
 
+func (m *marketManager) UseNames(n NameOf) { m.names = n }
+
 func (m *marketManager) UseCoordinators(c CoordinatorCheck) { m.coordinators = c }
+
+type NameOf func(ctx context.Context, id string) string
+
+func (m *marketManager) nameOf(ctx context.Context, id string) string {
+	if m.names == nil || id == "" {
+		return ""
+	}
+	return m.names(ctx, id)
+}
 
 func validWho(who string) bool {
 	return who == WhoPicker || who == WhoPoster || who == WhoCoordinator || who == WhoNone

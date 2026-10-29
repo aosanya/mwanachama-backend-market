@@ -473,6 +473,16 @@
           "description": "Whether the poster marked it paid."
         },
         {
+          "name": "yes_id",
+          "type": "string",
+          "description": "The yes this order came from, empty for an order placed with no yes."
+        },
+        {
+          "name": "promised_date",
+          "type": "string",
+          "description": "The date on that yes, kept on the order."
+        },
+        {
           "name": "created_at",
           "type": "timestamp",
           "description": "When the row was created."

@@ -445,7 +445,7 @@
       "action": "market.order.create",
       "tool": "market_buy_now",
       "title": "Buy now",
-      "description": "Order at the offer's price, which the order keeps.",
+      "description": "Order at the offer's price, which the order keeps. With yes_id the order is made from the caller's open yes and keeps its id and promised date. The order carries picker_name when the host supplies names.",
       "args": [
         {
           "from": "caller",
@@ -462,6 +462,11 @@
           "as": "quantity",
           "description": "How much.",
           "required": true
+        },
+        {
+          "from": "body",
+          "as": "yes_id",
+          "description": "The caller's open yes this order is made from."
         }
       ],
       "returns": [
