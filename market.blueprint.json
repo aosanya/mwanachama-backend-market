@@ -242,11 +242,12 @@
         {
           "name": "answer",
           "type": "enum",
-          "description": "The answer; silence stays waiting.",
+          "description": "The answer; silence stays waiting, and the picker may withdraw a waiting ask.",
           "values": [
             "waiting",
             "yes",
-            "no"
+            "no",
+            "withdrawn"
           ],
           "default": "waiting"
         },

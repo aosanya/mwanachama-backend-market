@@ -130,6 +130,22 @@ func (m *marketManager) AnswerAskWithMinutes(ctx context.Context, caller, askID,
 	return a, m.update(ctx, RoleAsk, a.ID, a)
 }
 
+func (m *marketManager) WithdrawAsk(ctx context.Context, caller, id string) (Ask, error) {
+	var a Ask
+	if err := m.get(ctx, RoleAsk, id, &a); err != nil {
+		return a, err
+	}
+	if caller == "" || a.Picker != caller {
+		return a, ErrNotFound
+	}
+	if a.Answer != models.AnswerWaiting {
+		return a, fmt.Errorf("%w: only an ask that is still waiting can be withdrawn", ErrConflict)
+	}
+	a.Answer = models.AnswerWithdrawn
+	a.PickerName = m.nameOf(ctx, a.Picker)
+	return a, m.update(ctx, RoleAsk, a.ID, a)
+}
+
 func (m *marketManager) ListAsks(ctx context.Context, caller string) ([]Ask, error) {
 	all, err := listOf[Ask](m, m.q(ctx, RoleAsk), RoleAsk)
 	if err != nil {

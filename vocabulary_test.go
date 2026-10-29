@@ -12,7 +12,7 @@ func heldVocabularies() map[string][]string {
 	return map[string][]string{
 		"poster.status":         {models.PosterPending, models.PosterApproved, models.PosterDeclined, models.PosterRemoved},
 		"poster.availability":   {models.Available, models.Away},
-		"ask.answer":            answers,
+		"ask.answer":            append(append([]string{}, answers...), models.AnswerWithdrawn),
 		"line.answer":           answers,
 		"notice.state":          {models.NoticeOpen, models.NoticeWithdrawn, models.NoticeSold},
 		"quote.state":           {models.QuoteOpen, models.QuoteCountered, models.QuoteAccepted, models.QuoteDeclined},

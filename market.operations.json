@@ -438,6 +438,32 @@
       ],
       "status": 201
     },
+    "withdraw_ask": {
+      "method": "POST",
+      "path": "/asks/{askID}/withdraw",
+      "call": "WithdrawAsk",
+      "action": "market.ask.withdraw",
+      "tool": "market_withdraw_ask",
+      "title": "Withdraw an ask",
+      "description": "The picker takes back an ask that is still waiting, so a ride or a price ask can be cancelled before the poster answers. Once the poster has answered, or the ask is already withdrawn, it is refused as a conflict; anyone but the picker gets not found. A withdrawn ask shows as withdrawn in the lists and cannot be answered.",
+      "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "path",
+          "as": "askID",
+          "description": "The ask."
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ]
+    },
     "withdraw_notice": {
       "method": "POST",
       "path": "/notices/{noticeID}/withdraw",

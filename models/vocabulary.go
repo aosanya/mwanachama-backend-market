@@ -9,9 +9,10 @@ const (
 	Available = "available"
 	Away      = "away"
 
-	AnswerWaiting = "waiting"
-	AnswerYes     = "yes"
-	AnswerNo      = "no"
+	AnswerWaiting   = "waiting"
+	AnswerYes       = "yes"
+	AnswerNo        = "no"
+	AnswerWithdrawn = "withdrawn"
 
 	NoticeOpen      = "open"
 	NoticeWithdrawn = "withdrawn"
