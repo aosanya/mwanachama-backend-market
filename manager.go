@@ -35,6 +35,7 @@ type MarketManager interface {
 	UseCoordinators(c CoordinatorCheck)
 	UseAgents(a AgentCheck)
 	UseNames(n NameOf)
+	ForRun(runID string) (MarketManager, error)
 
 	ApplyPoster(ctx context.Context, caller string, p Poster) (Poster, error)
 	ListPosters(ctx context.Context, status string) ([]Poster, error)
@@ -119,13 +120,13 @@ func NewMarketManager(db *gorm.DB, s *spec.Spec) (MarketManager, error) {
 func (m *marketManager) now() string { return m.clock().UTC().Format(stampLayout) }
 
 func (m *marketManager) q(ctx context.Context, role string) *gorm.DB {
-	return m.db.WithContext(ctx).Table(m.st.Table(role))
+	return m.st.Query(ctx, role)
 }
 
 func (m *marketManager) checks(role string, v any) error { return check(m.st.Object(role), v) }
 
 func (m *marketManager) insert(ctx context.Context, role string, v any) error {
-	row, err := encode(m.st.Object(role), v)
+	row, err := m.st.Row(role, v)
 	if err != nil {
 		return err
 	}

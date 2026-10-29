@@ -48,3 +48,7 @@ It asks, tells, drafts and records. It never says yes for a person, sends nothin
 ## Yes on the order, and names on reads (HS270)
 
 An order carries `yes_id` and `promised_date`: `market_buy_now` takes an optional `yes_id`, which must be the caller's own open yes at the same poster, and the order keeps that id and the yes's date. The module stores no names and knows no people. A host that wants a picker shown by name calls `UseNames` with a `NameOf` function; asks, orders and group order lines then come back with a derived `picker_name`, and posters with `owner_name` and `approved_by_name` (never columns), all empty when no function is supplied or the id is unknown.
+
+## A manager for one test run (HS280)
+
+`ForRun(runID)` returns a manager that shares the parent's hooks (coordinators, agents, names, workflow source and clock) and reaches every table through a store scoped to the run: it reads and writes the `_test` copy of each table, stamps `run_id` on what it inserts, and reads only rows with that run id, so two runs using the same key never meet and no row is written to a live table. The parent is not changed. An empty run id is refused. The hooks are copied when `ForRun` is called, so a host sets them first. The host removes a run's rows with the shared engine's `RemoveRun`.
