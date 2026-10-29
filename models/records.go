@@ -154,11 +154,12 @@ type Stock struct {
 }
 
 type Trail struct {
-	ID      string `json:"id"`
-	OrderID string `json:"order_id"`
-	Actor   string `json:"actor,omitempty"`
-	What    string `json:"what"`
-	At      string `json:"at"`
+	ID        string `json:"id"`
+	OrderID   string `json:"order_id"`
+	Actor     string `json:"actor,omitempty"`
+	ActorName string `json:"actor_name,omitempty" spec:"-"`
+	What      string `json:"what"`
+	At        string `json:"at"`
 }
 
 type GroupOrderView struct {

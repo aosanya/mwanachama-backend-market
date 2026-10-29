@@ -731,7 +731,7 @@
     },
     {
       "role": "trail",
-      "description": "Who did what to an order and when.",
+      "description": "Who did what to an order or a group order, and when.",
       "fields": [
         {
           "name": "id",
@@ -742,7 +742,7 @@
         {
           "name": "order_id",
           "type": "string",
-          "description": "The order.",
+          "description": "The order, or the group order.",
           "required": true
         },
         {

@@ -721,12 +721,48 @@
       "action": "market.group_order.list",
       "tool": "market_list_group_orders",
       "title": "List group orders",
-      "description": "Each shown as the caller may see it.",
+      "description": "Each shown as the caller may see it, in pages ordered by id: the first 50 by default. To see more, pass the id of the last group order of the page as after.",
       "args": [
         {
           "from": "caller",
           "as": "caller",
           "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "query",
+          "as": "limit",
+          "description": "Group orders in the page. Absent or zero means 50; the most is 200."
+        },
+        {
+          "from": "query",
+          "as": "after",
+          "description": "The id of the last group order already shown. Only later ones are returned."
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ]
+    },
+    "group_order_trail": {
+      "method": "GET",
+      "path": "/group-orders/{groupOrderID}/trail",
+      "call": "GroupOrderTrail",
+      "action": "market.group_order.trail",
+      "tool": "market_group_order_trail",
+      "title": "Group order trail",
+      "description": "Who did what to a group order, oldest first. The coordinator and the poster see all of it; a picker with a line sees her own steps and the coordinator's and poster's.",
+      "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "path",
+          "as": "groupOrderID",
+          "description": "The group order."
         }
       ],
       "returns": [

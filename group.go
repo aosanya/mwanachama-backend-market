@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"gorm.io/gorm/clause"
 
 	"github.com/aosanya/mwanachama-backend-market/models"
 )
@@ -37,7 +38,10 @@ func (m *marketManager) StartGroupOrder(ctx context.Context, caller string, g Gr
 	if err := m.checks(RoleGroupOrder, g); err != nil {
 		return g, err
 	}
-	return g, m.insert(ctx, RoleGroupOrder, g)
+	if err := m.insert(ctx, RoleGroupOrder, g); err != nil {
+		return g, err
+	}
+	return g, m.note(ctx, g.ID, caller, "started")
 }
 
 func (m *marketManager) openGroup(ctx context.Context, id string) (GroupOrder, error) {
@@ -63,7 +67,10 @@ func (m *marketManager) PromiseGroupOrder(ctx context.Context, caller, id, date,
 		return g, fmt.Errorf("%w: a promise carries a date", ErrInvalid)
 	}
 	g.PromisedDate, g.Note = date, note
-	return g, m.update(ctx, RoleGroupOrder, id, g)
+	if err := m.update(ctx, RoleGroupOrder, id, g); err != nil {
+		return g, err
+	}
+	return g, m.note(ctx, id, caller, "promised "+date)
 }
 
 func (m *marketManager) myLine(ctx context.Context, groupID, caller string) (*Line, error) {
@@ -86,14 +93,20 @@ func (m *marketManager) JoinGroupOrder(ctx context.Context, caller, id string, q
 		return Line{}, err
 	} else if l != nil {
 		l.Quantity = quantity
-		return *l, m.update(ctx, RoleLine, l.ID, *l)
+		if err := m.update(ctx, RoleLine, l.ID, *l); err != nil {
+			return *l, err
+		}
+		return *l, m.note(ctx, id, caller, "changed the quantity")
 	}
 	l := Line{ID: newID(), GroupOrderID: id, Picker: caller, Quantity: quantity,
 		Answer: models.AnswerYes, AnsweredVersion: g.TermsVersion, CreatedAt: m.now()}
 	if err := m.checks(RoleLine, l); err != nil {
 		return l, err
 	}
-	return l, m.insert(ctx, RoleLine, l)
+	if err := m.insert(ctx, RoleLine, l); err != nil {
+		return l, err
+	}
+	return l, m.note(ctx, id, caller, "joined")
 }
 
 func (m *marketManager) AskRevision(ctx context.Context, caller, id string, price, minimum float64) (GroupOrder, error) {
@@ -116,7 +129,10 @@ func (m *marketManager) AskRevision(ctx context.Context, caller, id string, pric
 	if err := m.update(ctx, RoleGroupOrder, id, g); err != nil {
 		return g, err
 	}
-	return g, m.q(ctx, RoleLine).Where("group_order_id = ?", id).Update("answer", models.AnswerWaiting).Error
+	if err := m.q(ctx, RoleLine).Where("group_order_id = ?", id).Update("answer", models.AnswerWaiting).Error; err != nil {
+		return g, err
+	}
+	return g, m.note(ctx, id, caller, "asked for new terms")
 }
 
 func (m *marketManager) AnswerRevision(ctx context.Context, caller, id, answer string) (Line, error) {
@@ -135,7 +151,10 @@ func (m *marketManager) AnswerRevision(ctx context.Context, caller, id, answer s
 		return Line{}, ErrNotFound
 	}
 	l.Answer, l.AnsweredVersion = answer, g.TermsVersion
-	return *l, m.update(ctx, RoleLine, l.ID, *l)
+	if err := m.update(ctx, RoleLine, l.ID, *l); err != nil {
+		return *l, err
+	}
+	return *l, m.note(ctx, id, caller, "answered "+answer)
 }
 
 func (m *marketManager) view(ctx context.Context, caller string, g GroupOrder) (GroupOrderView, error) {
@@ -169,8 +188,26 @@ func (m *marketManager) GetGroupOrder(ctx context.Context, caller, id string) (G
 	return m.view(ctx, caller, g)
 }
 
-func (m *marketManager) ListGroupOrders(ctx context.Context, caller string) ([]GroupOrderView, error) {
-	gs, err := listOf[GroupOrder](m, m.q(ctx, RoleGroupOrder), RoleGroupOrder)
+const (
+	defaultGroupOrderPage = 50
+	largestGroupOrderPage = 200
+)
+
+func (m *marketManager) ListGroupOrders(ctx context.Context, caller string, limit int, after string) ([]GroupOrderView, error) {
+	if limit < 0 {
+		return nil, fmt.Errorf("%w: a page is not negative", ErrInvalid)
+	}
+	if limit == 0 {
+		limit = defaultGroupOrderPage
+	}
+	if limit > largestGroupOrderPage {
+		limit = largestGroupOrderPage
+	}
+	q := m.q(ctx, RoleGroupOrder).Order("id").Limit(limit)
+	if after != "" {
+		q = q.Where("id > ?", after)
+	}
+	gs, err := listOf[GroupOrder](m, q, RoleGroupOrder)
 	if err != nil {
 		return nil, err
 	}
@@ -181,6 +218,38 @@ func (m *marketManager) ListGroupOrders(ctx context.Context, caller string) ([]G
 			return nil, err
 		}
 		out = append(out, v)
+	}
+	return out, nil
+}
+
+func (m *marketManager) GroupOrderTrail(ctx context.Context, caller, id string) ([]Trail, error) {
+	var g GroupOrder
+	if err := m.get(ctx, RoleGroupOrder, id, &g); err != nil {
+		return nil, err
+	}
+	var holder Poster
+	if err := m.get(ctx, RolePoster, g.PosterID, &holder); err != nil {
+		return nil, err
+	}
+	_, ownedErr := m.posterOwnedBy(ctx, caller, g.PosterID)
+	own, err := m.myLine(ctx, id, caller)
+	if err != nil {
+		return nil, err
+	}
+	seesAll := (g.Coordinator == caller && caller != "") || ownedErr == nil || m.isWho(ctx, WhoCoordinator, caller, parties{})
+	if !seesAll && own == nil {
+		return nil, ErrNotFound
+	}
+	rows, err := listOf[Trail](m, m.q(ctx, RoleTrail).Where("order_id = ?", id).Order(clause.OrderByColumn{Column: clause.Column{Name: "at"}}), RoleTrail)
+	if err != nil {
+		return nil, err
+	}
+	out := []Trail{}
+	for _, t := range rows {
+		if seesAll || t.Actor == caller || t.Actor == g.Coordinator || t.Actor == holder.Owner {
+			t.ActorName = m.nameOf(ctx, t.Actor)
+			out = append(out, t)
+		}
 	}
 	return out, nil
 }

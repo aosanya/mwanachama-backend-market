@@ -3,6 +3,7 @@ package market
 import (
 	"context"
 	"fmt"
+	"gorm.io/gorm/clause"
 
 	"github.com/aosanya/mwanachama-backend-market/models"
 )
@@ -150,5 +151,9 @@ func (m *marketManager) OrderTrail(ctx context.Context, caller, orderID string) 
 	if !ownTrail && !m.isWho(ctx, WhoCoordinator, caller, parties{}) {
 		return nil, ErrNotFound
 	}
-	return listOf[Trail](m, m.q(ctx, RoleTrail).Where("order_id = ?", orderID), RoleTrail)
+	rows, err := listOf[Trail](m, m.q(ctx, RoleTrail).Where("order_id = ?", orderID).Order(clause.OrderByColumn{Column: clause.Column{Name: "at"}}), RoleTrail)
+	for i := range rows {
+		rows[i].ActorName = m.nameOf(ctx, rows[i].Actor)
+	}
+	return rows, err
 }
