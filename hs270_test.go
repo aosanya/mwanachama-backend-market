@@ -100,3 +100,23 @@ func TestPosterReadsCarryTheOwnerAndApproverNamesWhenTheHostSuppliesOne(t *testi
 		t.Fatalf("apply %+v %v", again, err)
 	}
 }
+
+func TestYesesAndRequestsCarryThePickersNameWhenTheHostSuppliesOne(t *testing.T) {
+	m, ctx := newManager(t)
+	p := approvedPoster(t, m, ctx, "ann")
+	r, _ := m.CreateRequest(ctx, "bea", market.Request{Wanted: "beans"})
+	a, _ := m.CreateAsk(ctx, "bea", market.Ask{PosterID: p.ID, RequestID: r.ID, Question: "have any?"})
+	m.AnswerAsk(ctx, "ann", a.ID, models.AnswerYes, "2026-11-01", "")
+	ys, _ := m.ListYeses(ctx, "ann")
+	asked, _ := m.GetRequest(ctx, "ann", r.ID)
+	if ys[0].PickerName != "" || asked.PickerName != "" {
+		t.Fatal("no names were supplied")
+	}
+	m.UseNames(upperNames)
+	ys, _ = m.ListYeses(ctx, "ann")
+	asked, err := m.GetRequest(ctx, "ann", r.ID)
+	own, _ := m.GetRequest(ctx, "bea", r.ID)
+	if err != nil || ys[0].PickerName != "Name of bea" || asked.PickerName != "Name of bea" || own.PickerName != "Name of bea" {
+		t.Fatalf("yes %q request %q own %q err %v", ys[0].PickerName, asked.PickerName, own.PickerName, err)
+	}
+}

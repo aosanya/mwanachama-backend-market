@@ -21,6 +21,7 @@ func (m *marketManager) GetRequest(ctx context.Context, caller, id string) (Requ
 		return r, err
 	}
 	if caller != "" && r.Picker == caller {
+		r.PickerName = m.nameOf(ctx, r.Picker)
 		return r, nil
 	}
 	owned, err := m.ownedPosters(ctx, caller)
@@ -33,6 +34,7 @@ func (m *marketManager) GetRequest(ctx context.Context, caller, id string) (Requ
 	}
 	for _, a := range asks {
 		if owned[a.PosterID] {
+			r.PickerName = m.nameOf(ctx, r.Picker)
 			return r, nil
 		}
 	}
@@ -159,6 +161,7 @@ func (m *marketManager) ListYeses(ctx context.Context, caller string) ([]Yes, er
 	var out []Yes
 	for _, y := range all {
 		if y.Picker == caller || owned[y.PosterID] {
+			y.PickerName = m.nameOf(ctx, y.Picker)
 			out = append(out, y)
 		}
 	}

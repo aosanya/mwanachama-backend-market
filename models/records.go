@@ -27,12 +27,13 @@ type Offer struct {
 }
 
 type Request struct {
-	ID        string  `json:"id"`
-	Picker    string  `json:"picker"`
-	Wanted    string  `json:"wanted"`
-	Quantity  float64 `json:"quantity,omitempty"`
-	NeededBy  string  `json:"needed_by,omitempty"`
-	CreatedAt string  `json:"created_at"`
+	ID         string  `json:"id"`
+	Picker     string  `json:"picker"`
+	Wanted     string  `json:"wanted"`
+	Quantity   float64 `json:"quantity,omitempty"`
+	NeededBy   string  `json:"needed_by,omitempty"`
+	PickerName string  `json:"picker_name,omitempty" spec:"-"`
+	CreatedAt  string  `json:"created_at"`
 }
 
 type Ask struct {
@@ -85,19 +86,20 @@ type Draft struct {
 }
 
 type Yes struct {
-	ID        string  `json:"id"`
-	AskID     string  `json:"ask_id"`
-	PosterID  string  `json:"poster_id,omitempty"`
-	Picker    string  `json:"picker,omitempty"`
-	What      string  `json:"what,omitempty"`
-	Quantity  float64 `json:"quantity,omitempty"`
-	Date      string  `json:"date,omitempty"`
-	Note      string  `json:"note,omitempty"`
-	OfferID   string  `json:"offer_id,omitempty"`
-	Price     float64 `json:"price,omitempty"`
-	Minutes   int     `json:"minutes,omitempty"`
-	State     string  `json:"state"`
-	CreatedAt string  `json:"created_at"`
+	ID         string  `json:"id"`
+	AskID      string  `json:"ask_id"`
+	PosterID   string  `json:"poster_id,omitempty"`
+	Picker     string  `json:"picker,omitempty"`
+	What       string  `json:"what,omitempty"`
+	Quantity   float64 `json:"quantity,omitempty"`
+	Date       string  `json:"date,omitempty"`
+	Note       string  `json:"note,omitempty"`
+	OfferID    string  `json:"offer_id,omitempty"`
+	Price      float64 `json:"price,omitempty"`
+	Minutes    int     `json:"minutes,omitempty"`
+	PickerName string  `json:"picker_name,omitempty" spec:"-"`
+	State      string  `json:"state"`
+	CreatedAt  string  `json:"created_at"`
 }
 
 type Order struct {
