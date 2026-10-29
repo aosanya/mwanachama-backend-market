@@ -36,6 +36,7 @@ const (
 
 	GroupOpen      = "open"
 	GroupRevising  = "revising"
+	GroupSent      = "sent"
 	GroupClosed    = "closed"
 	GroupCancelled = "cancelled"
 

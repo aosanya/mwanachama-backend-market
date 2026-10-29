@@ -19,7 +19,7 @@ func heldVocabularies() map[string][]string {
 		"draft.state":           {models.DraftWaiting, models.DraftSent},
 		"yes.state":             {models.YesOpen, models.YesDelivered, models.YesCalledOff},
 		"order.state":           {models.OrderPlaced, models.OrderCancelled, models.OrderDelivered},
-		"group_order.state":     {models.GroupOpen, models.GroupRevising, models.GroupClosed, models.GroupCancelled},
+		"group_order.state":     {models.GroupOpen, models.GroupRevising, models.GroupSent, models.GroupClosed, models.GroupCancelled},
 		"group_order.direction": {models.DirectionBuy, models.DirectionSell},
 	}
 }

@@ -936,6 +936,63 @@
         }
       ]
     },
+    "send_group_order": {
+      "method": "POST",
+      "path": "/group-orders/{groupOrderID}/send",
+      "call": "SendGroupOrder",
+      "action": "market.group_order.send",
+      "tool": "market_send_group_order",
+      "title": "Send a group order",
+      "description": "The step's named actor, the coordinator by default, sends an open group order to the poster. After that nobody joins or changes it.",
+      "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "path",
+          "as": "groupOrderID",
+          "description": "The group order."
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ]
+    },
+    "mark_line_paid": {
+      "method": "POST",
+      "path": "/group-orders/{groupOrderID}/lines/{lineID}/paid",
+      "call": "MarkLinePaid",
+      "action": "market.group_order.line_paid",
+      "tool": "market_mark_line_paid",
+      "title": "Mark a farmer's line paid",
+      "description": "The step's named actor, the coordinator by default, marks one line of a sent group order paid.",
+      "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "path",
+          "as": "groupOrderID",
+          "description": "The group order."
+        },
+        {
+          "from": "path",
+          "as": "lineID",
+          "description": "The line."
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ]
+    },
     "answer_revision": {
       "method": "POST",
       "path": "/group-orders/{groupOrderID}/revision/answer",

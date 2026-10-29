@@ -49,10 +49,50 @@ func (m *marketManager) openGroup(ctx context.Context, id string) (GroupOrder, e
 	if err := m.get(ctx, RoleGroupOrder, id, &g); err != nil {
 		return g, err
 	}
-	if g.State == models.GroupClosed || g.State == models.GroupCancelled {
+	if g.State == models.GroupClosed || g.State == models.GroupCancelled || g.State == models.GroupSent {
 		return g, ErrConflict
 	}
 	return g, nil
+}
+
+func (m *marketManager) SendGroupOrder(ctx context.Context, caller, id string) (GroupOrder, error) {
+	var g GroupOrder
+	if err := m.get(ctx, RoleGroupOrder, id, &g); err != nil {
+		return g, err
+	}
+	if _, _, err := m.gate(ctx, WorkflowGroupOrder, g.WorkflowVersion, StepSent, caller, parties{posterID: g.PosterID, coordinator: g.Coordinator}); err != nil {
+		return g, err
+	}
+	if g.State != models.GroupOpen {
+		return g, ErrConflict
+	}
+	g.State = models.GroupSent
+	if err := m.update(ctx, RoleGroupOrder, id, g); err != nil {
+		return g, err
+	}
+	return g, m.note(ctx, id, caller, "sent")
+}
+
+func (m *marketManager) MarkLinePaid(ctx context.Context, caller, id, lineID string) (Line, error) {
+	var g GroupOrder
+	if err := m.get(ctx, RoleGroupOrder, id, &g); err != nil {
+		return Line{}, err
+	}
+	if _, _, err := m.gate(ctx, WorkflowGroupOrder, g.WorkflowVersion, StepLinePaid, caller, parties{posterID: g.PosterID, coordinator: g.Coordinator}); err != nil {
+		return Line{}, err
+	}
+	var l Line
+	if err := m.get(ctx, RoleLine, lineID, &l); err != nil || l.GroupOrderID != id {
+		return Line{}, ErrNotFound
+	}
+	if g.State != models.GroupSent {
+		return l, ErrConflict
+	}
+	l.Paid = true
+	if err := m.update(ctx, RoleLine, l.ID, l); err != nil {
+		return l, err
+	}
+	return l, m.note(ctx, id, caller, "marked a line paid")
 }
 
 func (m *marketManager) PromiseGroupOrder(ctx context.Context, caller, id, date, note string) (GroupOrder, error) {

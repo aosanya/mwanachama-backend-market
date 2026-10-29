@@ -587,6 +587,7 @@
           "values": [
             "open",
             "revising",
+            "sent",
             "closed",
             "cancelled"
           ],
