@@ -64,6 +64,7 @@
         {
           "from": "path",
           "as": "posterID",
+          "refers": "market.poster",
           "description": "The poster."
         }
       ],
@@ -90,6 +91,7 @@
         {
           "from": "path",
           "as": "posterID",
+          "refers": "market.poster",
           "description": "The poster."
         }
       ],
@@ -116,6 +118,7 @@
         {
           "from": "path",
           "as": "posterID",
+          "refers": "market.poster",
           "description": "The poster."
         }
       ],
@@ -142,6 +145,7 @@
         {
           "from": "path",
           "as": "posterID",
+          "refers": "market.poster",
           "description": "The poster."
         },
         {
@@ -204,6 +208,7 @@
         {
           "from": "path",
           "as": "offerID",
+          "refers": "market.offer",
           "into": "ID",
           "description": "The offer."
         }
@@ -231,6 +236,7 @@
         {
           "from": "path",
           "as": "offer_id",
+          "refers": "market.offer",
           "description": "The offer."
         },
         {
@@ -312,6 +318,7 @@
         {
           "from": "query",
           "as": "poster_id",
+          "refers": "market.poster",
           "description": "Only this poster's offers."
         }
       ],
@@ -364,6 +371,7 @@
         {
           "from": "path",
           "as": "requestID",
+          "refers": "market.request",
           "description": "The request."
         }
       ],
@@ -437,6 +445,7 @@
         {
           "from": "path",
           "as": "askID",
+          "refers": "market.ask",
           "description": "The ask."
         },
         {
@@ -458,6 +467,7 @@
         {
           "from": "body",
           "as": "offer_id",
+          "refers": "market.offer",
           "description": "One of this poster's offers, with yes."
         },
         {
@@ -541,6 +551,7 @@
         {
           "from": "path",
           "as": "askID",
+          "refers": "market.ask",
           "description": "The ask."
         }
       ],
@@ -567,6 +578,7 @@
         {
           "from": "path",
           "as": "noticeID",
+          "refers": "market.notice",
           "description": "The notice."
         }
       ],
@@ -608,6 +620,7 @@
         {
           "from": "path",
           "as": "offerID",
+          "refers": "market.offer",
           "description": "The offer."
         },
         {
@@ -619,6 +632,7 @@
         {
           "from": "body",
           "as": "yes_id",
+          "refers": "market.yes",
           "description": "The caller's open yes this order is made from."
         }
       ],
@@ -646,6 +660,7 @@
         {
           "from": "path",
           "as": "orderID",
+          "refers": "market.order",
           "description": "The order."
         }
       ],
@@ -672,6 +687,7 @@
         {
           "from": "path",
           "as": "orderID",
+          "refers": "market.order",
           "description": "The order."
         }
       ],
@@ -698,6 +714,7 @@
         {
           "from": "path",
           "as": "orderID",
+          "refers": "market.order",
           "description": "The order."
         }
       ],
@@ -745,6 +762,7 @@
         {
           "from": "path",
           "as": "orderID",
+          "refers": "market.order",
           "description": "The order."
         }
       ],
@@ -796,6 +814,7 @@
         {
           "from": "path",
           "as": "posterID",
+          "refers": "market.poster",
           "description": "The poster."
         }
       ],
@@ -879,6 +898,7 @@
         {
           "from": "path",
           "as": "groupOrderID",
+          "refers": "market.group_order",
           "description": "The group order."
         }
       ],
@@ -905,6 +925,7 @@
         {
           "from": "path",
           "as": "groupOrderID",
+          "refers": "market.group_order",
           "description": "The group order."
         }
       ],
@@ -931,6 +952,7 @@
         {
           "from": "path",
           "as": "groupOrderID",
+          "refers": "market.group_order",
           "description": "The group order."
         },
         {
@@ -964,6 +986,7 @@
         {
           "from": "path",
           "as": "groupOrderID",
+          "refers": "market.group_order",
           "description": "The group order."
         },
         {
@@ -1002,6 +1025,7 @@
         {
           "from": "path",
           "as": "groupOrderID",
+          "refers": "market.group_order",
           "description": "The group order."
         },
         {
@@ -1039,6 +1063,7 @@
         {
           "from": "path",
           "as": "groupOrderID",
+          "refers": "market.group_order",
           "description": "The group order."
         }
       ],
@@ -1065,11 +1090,13 @@
         {
           "from": "path",
           "as": "groupOrderID",
+          "refers": "market.group_order",
           "description": "The group order."
         },
         {
           "from": "path",
           "as": "lineID",
+          "refers": "market.line",
           "description": "The line."
         }
       ],
@@ -1096,11 +1123,13 @@
         {
           "from": "path",
           "as": "groupOrderID",
+          "refers": "market.group_order",
           "description": "The group order."
         },
         {
           "from": "path",
           "as": "lineID",
+          "refers": "market.line",
           "description": "The line."
         },
         {
@@ -1133,6 +1162,7 @@
         {
           "from": "path",
           "as": "groupOrderID",
+          "refers": "market.group_order",
           "description": "The group order."
         }
       ],
@@ -1159,6 +1189,7 @@
         {
           "from": "path",
           "as": "groupOrderID",
+          "refers": "market.group_order",
           "description": "The group order."
         },
         {
@@ -1191,6 +1222,7 @@
         {
           "from": "path",
           "as": "noticeID",
+          "refers": "market.notice",
           "description": "The notice."
         },
         {
@@ -1222,6 +1254,7 @@
         {
           "from": "path",
           "as": "noticeID",
+          "refers": "market.notice",
           "description": "The notice."
         }
       ],
@@ -1248,6 +1281,7 @@
         {
           "from": "path",
           "as": "quoteID",
+          "refers": "market.quote",
           "description": "The quote."
         },
         {
@@ -1286,6 +1320,7 @@
         {
           "from": "path",
           "as": "noticeID",
+          "refers": "market.notice",
           "description": "The notice."
         }
       ],
@@ -1312,6 +1347,7 @@
         {
           "from": "path",
           "as": "draftID",
+          "refers": "market.draft",
           "description": "The draft."
         }
       ],
@@ -1338,6 +1374,7 @@
         {
           "from": "path",
           "as": "quoteID",
+          "refers": "market.quote",
           "description": "The quote."
         },
         {
@@ -1375,6 +1412,7 @@
         {
           "from": "path",
           "as": "quoteID",
+          "refers": "market.quote",
           "description": "The quote."
         }
       ],
