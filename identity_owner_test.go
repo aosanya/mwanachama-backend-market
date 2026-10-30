@@ -135,3 +135,24 @@ func TestResolveNamesWhyARawIsNotAnswered(t *testing.T) {
 		}
 	}
 }
+
+func TestTwoMountsOfOneInstanceDoNotAnswerForEachOthersThings(t *testing.T) {
+	db := newDB(t)
+	ctx := context.Background()
+	inputs := mountedMarket(t, db, "inputs")
+	harvest := mountedMarket(t, db, "harvest")
+	poster := approvedPoster(t, inputs, ctx, "ann")
+	raw, err := inputs.StableIdentity(ctx, "poster", poster.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "market/app/inputs/poster/" + poster.ID; raw != want {
+		t.Fatalf("raw = %q, want %q", raw, want)
+	}
+	if _, _, err := harvest.Resolve(ctx, raw); !errors.Is(err, identity.ErrNotOwned) {
+		t.Fatalf("the other mount: err = %v, want identity.ErrNotOwned", err)
+	}
+	if _, id, err := inputs.Resolve(ctx, raw); err != nil || id != poster.ID {
+		t.Fatalf("its own mount: id = %q err = %v", id, err)
+	}
+}
