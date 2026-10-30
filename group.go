@@ -95,6 +95,58 @@ func (m *marketManager) MarkLinePaid(ctx context.Context, caller, id, lineID str
 	return l, m.note(ctx, id, caller, "marked a line paid")
 }
 
+const (
+	DecisionKeep    = "keep"
+	DecisionTakeOff = "take_off"
+)
+
+func (m *marketManager) DecideSilentLine(ctx context.Context, caller, id, lineID, decision string) (Line, error) {
+	var g GroupOrder
+	if err := m.get(ctx, RoleGroupOrder, id, &g); err != nil {
+		return Line{}, err
+	}
+	if _, _, err := m.gate(ctx, WorkflowGroupOrder, g.WorkflowVersion, StepDecided, caller, parties{posterID: g.PosterID, coordinator: g.Coordinator}); err != nil {
+		return Line{}, err
+	}
+	if decision != DecisionKeep && decision != DecisionTakeOff {
+		return Line{}, fmt.Errorf("%w: decide keep or take_off", ErrInvalid)
+	}
+	var l Line
+	if err := m.get(ctx, RoleLine, lineID, &l); err != nil || l.GroupOrderID != id {
+		return Line{}, ErrNotFound
+	}
+	if (g.State != models.GroupOpen && g.State != models.GroupRevising) || l.Answer != models.AnswerWaiting {
+		return l, ErrConflict
+	}
+	l.Answer, l.AnsweredVersion, l.DecidedByCoordinator = models.AnswerYes, g.TermsVersion, true
+	what := "kept a silent line"
+	if decision == DecisionTakeOff {
+		l.Answer, what = models.AnswerNo, "took a silent line off"
+	}
+	if err := m.update(ctx, RoleLine, l.ID, l); err != nil {
+		return l, err
+	}
+	return l, m.note(ctx, id, caller, what)
+}
+
+func (m *marketManager) CallOffGroupOrder(ctx context.Context, caller, id string) (GroupOrder, error) {
+	var g GroupOrder
+	if err := m.get(ctx, RoleGroupOrder, id, &g); err != nil {
+		return g, err
+	}
+	if _, _, err := m.gate(ctx, WorkflowGroupOrder, g.WorkflowVersion, StepCalledOff, caller, parties{posterID: g.PosterID, coordinator: g.Coordinator}); err != nil {
+		return g, err
+	}
+	if g.State == models.GroupClosed || g.State == models.GroupCancelled {
+		return g, ErrConflict
+	}
+	g.State = models.GroupCancelled
+	if err := m.update(ctx, RoleGroupOrder, id, g); err != nil {
+		return g, err
+	}
+	return g, m.note(ctx, id, caller, "called off")
+}
+
 func (m *marketManager) PromiseGroupOrder(ctx context.Context, caller, id, date, note string) (GroupOrder, error) {
 	var g GroupOrder
 	if err := m.get(ctx, RoleGroupOrder, id, &g); err != nil {

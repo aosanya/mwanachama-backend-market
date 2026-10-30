@@ -1025,6 +1025,69 @@
         }
       ]
     },
+    "decide_silent_line": {
+      "method": "POST",
+      "path": "/group-orders/{groupOrderID}/lines/{lineID}/decision",
+      "call": "DecideSilentLine",
+      "action": "market.group_order.decide_silent_line",
+      "tool": "market_decide_silent_line",
+      "title": "Decide for a silent line",
+      "description": "The step's named actor, the coordinator by default, keeps or takes off a line whose picker has not answered the current terms.",
+      "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "path",
+          "as": "groupOrderID",
+          "description": "The group order."
+        },
+        {
+          "from": "path",
+          "as": "lineID",
+          "description": "The line."
+        },
+        {
+          "from": "body",
+          "as": "decision",
+          "description": "keep or take_off.",
+          "required": true
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ]
+    },
+    "call_off_group_order": {
+      "method": "POST",
+      "path": "/group-orders/{groupOrderID}/call-off",
+      "call": "CallOffGroupOrder",
+      "action": "market.group_order.call_off",
+      "tool": "market_call_off",
+      "title": "Call a group order off",
+      "description": "The step's named actor, the coordinator by default, calls a group order off at any step before it is closed.",
+      "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "path",
+          "as": "groupOrderID",
+          "description": "The group order."
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ]
+    },
     "answer_revision": {
       "method": "POST",
       "path": "/group-orders/{groupOrderID}/revision/answer",

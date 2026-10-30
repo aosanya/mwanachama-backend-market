@@ -27,6 +27,8 @@ const (
 	StepStart     = "start"
 	StepSent      = "sent"
 	StepLinePaid  = "line_paid"
+	StepDecided   = "decided"
+	StepCalledOff = "called_off"
 	StepApproved  = "approved"
 	StepQuoted    = "quoted"
 	StepDrafted   = "drafted"
@@ -59,7 +61,8 @@ func DefaultWorkflows() []Workflow {
 		{Name: WorkflowCancel, Version: 1, Steps: []Step{{Name: StepCancelled, Who: WhoPicker, ClosesYes: true}}},
 		{Name: WorkflowGroupOrder, Version: 1, Steps: []Step{
 			{Name: StepStart, Who: WhoCoordinator}, {Name: StepSent, Who: WhoCoordinator},
-			{Name: StepLinePaid, Who: WhoCoordinator}, {Name: StepPaid, Who: WhoCoordinator}}},
+			{Name: StepLinePaid, Who: WhoCoordinator}, {Name: StepDecided, Who: WhoCoordinator},
+			{Name: StepCalledOff, Who: WhoCoordinator}, {Name: StepPaid, Who: WhoCoordinator}}},
 		{Name: WorkflowApprovePoster, Version: 1, Steps: []Step{{Name: StepApproved, Who: WhoCoordinator}}},
 		{Name: WorkflowBidding, Version: 1, Steps: []Step{
 			{Name: StepQuoted, Who: WhoPoster}, {Name: StepDrafted, Who: WhoAgent},
