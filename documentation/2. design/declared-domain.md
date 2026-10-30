@@ -26,4 +26,4 @@ An order keeps the unit price it was tapped at and the workflow version it start
 
 ## Routes
 
-`market.operations.json` declares 42 addresses with actions `market.<object>.<verb>` and the tool names the host's agents call. `routes.AnonymousActions` is empty.
+`market.operations.json` declares 43 addresses with actions `market.<object>.<verb>` and the tool names the host's agents call. `routes.AnonymousActions` is empty.

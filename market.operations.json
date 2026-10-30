@@ -214,6 +214,38 @@
         }
       ]
     },
+    "regroup_offer": {
+      "method": "POST",
+      "path": "/offers/{offer_id}/regroup",
+      "call": "RegroupOffer",
+      "action": "market.offer.regroup",
+      "tool": "market_regroup_offer",
+      "title": "Move an offer under another product",
+      "description": "Change the product an offer is grouped under and keep everything else about it. An unknown offer is not found, an empty product is invalid, and a move onto the product the offer already has is refused as a conflict that names it. The host gates who may.",
+      "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "path",
+          "as": "offer_id",
+          "description": "The offer."
+        },
+        {
+          "from": "body",
+          "as": "product",
+          "description": "The product to group the offer under.",
+          "required": true
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ]
+    },
     "list_offers": {
       "method": "GET",
       "path": "/offers",

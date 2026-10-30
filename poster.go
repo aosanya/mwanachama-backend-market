@@ -3,6 +3,7 @@ package market
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/aosanya/mwanachama-backend-market/models"
 )
@@ -112,6 +113,25 @@ func (m *marketManager) UpdateOffer(ctx context.Context, caller string, o Offer)
 	if err := m.checks(RoleOffer, o); err != nil {
 		return o, err
 	}
+	return o, m.update(ctx, RoleOffer, o.ID, o)
+}
+
+func (m *marketManager) RegroupOffer(ctx context.Context, caller, offerID, product string) (Offer, error) {
+	if caller == "" {
+		return Offer{}, ErrForbidden
+	}
+	product = strings.TrimSpace(product)
+	if product == "" {
+		return Offer{}, fmt.Errorf("%w: name the product to group the offer under", ErrInvalid)
+	}
+	var o Offer
+	if err := m.get(ctx, RoleOffer, offerID, &o); err != nil {
+		return o, err
+	}
+	if o.Product == product {
+		return o, fmt.Errorf("%w: the offer is already under %s", ErrConflict, product)
+	}
+	o.Product = product
 	return o, m.update(ctx, RoleOffer, o.ID, o)
 }
 

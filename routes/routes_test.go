@@ -36,8 +36,8 @@ func TestTheDeclaredTableBuildsEveryRoute(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(rs) != 44 {
-		t.Fatalf("want 44 routes, got %d", len(rs))
+	if len(rs) != 45 {
+		t.Fatalf("want 45 routes, got %d", len(rs))
 	}
 }
 
@@ -56,7 +56,7 @@ func TestTheDeclaredToolsCarryTheNamesCallersUse(t *testing.T) {
 	for _, tl := range tools {
 		have[tl.Name] = true
 	}
-	for _, n := range strings.Fields(`market_apply_poster market_list_posters market_list_offers market_create_offer market_update_offer market_set_stock market_list_asks market_answer_ask market_buy_now market_get_order market_list_orders market_cancel_order market_mark_paid market_list_group_orders market_get_group_order market_join_group_order market_ask_revision market_answer_revision market_create_wanted market_ask market_withdraw_ask market_create_notice market_withdraw_notice market_approve_poster market_decline_poster market_send_quote market_list_quotes market_draft_counter market_list_drafts market_send_counter market_revise_quote market_accept_quote market_promise_group_order market_group_order_trail market_send_group_order market_mark_line_paid`) {
+	for _, n := range strings.Fields(`market_apply_poster market_list_posters market_list_offers market_create_offer market_update_offer market_set_stock market_list_asks market_answer_ask market_buy_now market_get_order market_list_orders market_cancel_order market_mark_paid market_list_group_orders market_get_group_order market_join_group_order market_ask_revision market_answer_revision market_create_wanted market_ask market_withdraw_ask market_regroup_offer market_create_notice market_withdraw_notice market_approve_poster market_decline_poster market_send_quote market_list_quotes market_draft_counter market_list_drafts market_send_counter market_revise_quote market_accept_quote market_promise_group_order market_group_order_trail market_send_group_order market_mark_line_paid`) {
 		if !have[n] {
 			t.Errorf("missing tool %s", n)
 		}

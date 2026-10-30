@@ -46,6 +46,7 @@ type MarketManager interface {
 
 	CreateOffer(ctx context.Context, caller string, o Offer) (Offer, error)
 	UpdateOffer(ctx context.Context, caller string, o Offer) (Offer, error)
+	RegroupOffer(ctx context.Context, caller, offerID, product string) (Offer, error)
 	ListOffers(ctx context.Context, posterID string) ([]Offer, error)
 
 	CreateRequest(ctx context.Context, caller string, r Request) (Request, error)
