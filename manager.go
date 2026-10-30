@@ -7,6 +7,7 @@ import (
 
 	"gorm.io/gorm"
 
+	"github.com/aosanya/mwanachama-backend-shared/identity"
 	"github.com/aosanya/mwanachama-backend-shared/spec"
 	"github.com/aosanya/mwanachama-backend-shared/specstore"
 
@@ -32,6 +33,8 @@ type Trail = models.Trail
 type GroupOrderView = models.GroupOrderView
 
 type MarketManager interface {
+	identity.Owner
+
 	UseWorkflows(s WorkflowSource)
 	UseCoordinators(c CoordinatorCheck)
 	UseAgents(a AgentCheck)
