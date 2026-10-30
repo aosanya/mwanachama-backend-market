@@ -23,7 +23,15 @@ type Offer struct {
 	BulkMin      float64 `json:"bulk_min,omitempty"`
 	BulkPrice    float64 `json:"bulk_price,omitempty"`
 	Product      string  `json:"product,omitempty"`
+	Category     string  `json:"category,omitempty"`
 	PostedAt     string  `json:"posted_at"`
+}
+
+type Kind struct {
+	Category string `json:"category"`
+	Asked    int    `json:"asked"`
+	Offers   int    `json:"offers"`
+	Product  string `json:"product,omitempty"`
 }
 
 type Request struct {

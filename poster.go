@@ -95,6 +95,10 @@ func (m *marketManager) CreateOffer(ctx context.Context, caller string, o Offer)
 		return o, ErrPosterNotReady
 	}
 	o.ID, o.PostedAt = newID(), m.now()
+	o.Product, o.Category = strings.TrimSpace(o.Product), strings.TrimSpace(o.Category)
+	if o.Category == "" {
+		o.Category = m.categoryOf(ctx, o.Product)
+	}
 	if err := m.checks(RoleOffer, o); err != nil {
 		return o, err
 	}
@@ -132,6 +136,9 @@ func (m *marketManager) RegroupOffer(ctx context.Context, caller, offerID, produ
 		return o, fmt.Errorf("%w: the offer is already under %s", ErrConflict, product)
 	}
 	o.Product = product
+	if category := m.categoryOf(ctx, product); category != "" {
+		o.Category = category
+	}
 	return o, m.update(ctx, RoleOffer, o.ID, o)
 }
 

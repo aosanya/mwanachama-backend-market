@@ -17,6 +17,7 @@ const stampLayout = "2006-01-02T15:04:05.000000Z07:00"
 
 type Poster = models.Poster
 type Offer = models.Offer
+type Kind = models.Kind
 type Request = models.Request
 type Ask = models.Ask
 type Notice = models.Notice
@@ -47,6 +48,8 @@ type MarketManager interface {
 	CreateOffer(ctx context.Context, caller string, o Offer) (Offer, error)
 	UpdateOffer(ctx context.Context, caller string, o Offer) (Offer, error)
 	RegroupOffer(ctx context.Context, caller, offerID, product string) (Offer, error)
+	CategoriseProduct(ctx context.Context, caller, product, category string) ([]Offer, error)
+	ListKinds(ctx context.Context, limit int) ([]Kind, error)
 	ListOffers(ctx context.Context, posterID string) ([]Offer, error)
 
 	CreateRequest(ctx context.Context, caller string, r Request) (Request, error)

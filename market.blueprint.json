@@ -123,6 +123,11 @@
           "description": "The product the AI grouped it under."
         },
         {
+          "name": "category",
+          "type": "string",
+          "description": "The kind of product the AI grouped the product under, in free words; the coordinator corrects it."
+        },
+        {
           "name": "posted_at",
           "type": "timestamp",
           "description": "When it was posted."
@@ -141,6 +146,13 @@
           "description": "Reads product.",
           "fields": [
             "product"
+          ]
+        },
+        {
+          "name": "category",
+          "description": "Reads category.",
+          "fields": [
+            "category"
           ]
         }
       ]

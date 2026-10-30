@@ -246,6 +246,60 @@
         }
       ]
     },
+    "categorise_product": {
+      "method": "POST",
+      "path": "/products/category",
+      "call": "CategoriseProduct",
+      "action": "market.product.categorise",
+      "tool": "market_categorise_product",
+      "title": "Put a product under another category",
+      "description": "Change the category every offer grouped under a product carries, and nothing else about them. A product no offer is grouped under is not found, an empty product or category is invalid, and a product already under that category is refused as a conflict that names it. The host gates who may. The owner has not settled who names the categories: the AI proposes one when it groups an offer and this corrects it.",
+      "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "body",
+          "as": "product",
+          "description": "The product whose category changes.",
+          "required": true
+        },
+        {
+          "from": "body",
+          "as": "category",
+          "description": "The category to put it under, in free words.",
+          "required": true
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ]
+    },
+    "list_kinds": {
+      "method": "GET",
+      "path": "/kinds",
+      "call": "ListKinds",
+      "action": "market.kind.list",
+      "tool": "market_list_kinds",
+      "title": "List the kinds a member is offered",
+      "description": "The few categories members ask for most, so an app can offer them as prompts instead of listing the market. Asks and orders about a product count for its category; a category nobody has asked for yet follows, ranked by how many offers it has. Each carries the product asked for most inside it. Absent or zero limit means 3; the most is 10. Everyone sees them.",
+      "args": [
+        {
+          "from": "query",
+          "as": "limit",
+          "description": "Kinds to return. Absent or zero means 3; the most is 10."
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ]
+    },
     "list_offers": {
       "method": "GET",
       "path": "/offers",
