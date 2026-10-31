@@ -28,7 +28,7 @@ A notice is `open`, `withdrawn` or `sold`. A notice takes quotes only while it i
 
 ## What the agent cannot do
 
-It cannot send a counter, accept a quote or send a quote. Each step names someone else, and the power `market.advise` lets an agent seat list quotes and write drafts and nothing more. This keeps the market rule that the AI never says yes for a person.
+It cannot send a counter, accept a quote or send a quote. Each step names someone else, and the permission `market.advise` lets an agent seat list quotes and write drafts and nothing more. This keeps the market rule that the AI never says yes for a person.
 
 A counter waits for the buyer's new price. The picker accepts only an open quote, so a countered quote cannot be accepted until the poster revises it.
 
