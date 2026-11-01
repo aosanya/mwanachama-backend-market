@@ -1,6 +1,6 @@
 # The market as a declared domain (HS210)
 
-The records in [market.md](market.md) are eleven roles in `market.blueprint.json`: poster, offer, request, ask, notice, yes, order, group_order, line, stock and trail. There are no row structs and no `AutoMigrate`; `market.wakala.json` is the default domain a host mounts through `SpecFor(instance)` and `SpecForMount(instance, mount)`, and `spec/examples/` holds `inputs` and `clinic`, two domains far enough apart that a domain word in the module would show.
+The records in [market.md](market.md) are thirteen roles in `market.blueprint.json`: poster, offer, request, ask, notice, yes, order, group_order, line, stock, trail, quote and draft. There are no row structs and no `AutoMigrate`; `market.wakala.json` is the default domain a host mounts through `SpecFor(instance)` and `SpecForMount(instance, mount)`, and `spec/examples/` holds `inputs` and `clinic`, two domains far enough apart that a domain word in the module would show.
 
 ## Who is acting
 
@@ -26,4 +26,4 @@ An order keeps the unit price it was tapped at and the workflow version it start
 
 ## Routes
 
-`market.operations.json` declares 43 addresses with actions `market.<object>.<verb>` and the tool names the host's agents call. `routes.AnonymousActions` is empty.
+`market.operations.json` declares 50 addresses with actions `market.<object>.<verb>` and the tool names the host's agents call. `routes.AnonymousActions` is empty.

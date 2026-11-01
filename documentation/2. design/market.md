@@ -26,7 +26,7 @@ A market puts the people who post a price in touch with the people who pick one,
 | order | Picker, poster, product, amount, the price as it was when she tapped, the workflow version, the state, the paid mark | The AI, from her tap and his yes | The picker, the poster, the coordinator |
 | group_order | Poster, product, terms (price and minimum) and every revised version, the workflow version, the state | The coordinator starts it; the AI keeps it | The coordinator sees all; the poster sees names and amounts and no contact; a picker sees her own line, the total, the minimum and the count |
 | line | One picker's amount in a group order, her answer to the current terms, the coordinator's decision for a silent one, her paid mark | The picker, the coordinator | As the group order |
-| stock_list | A poster's own count for each product | The poster | The poster only |
+| stock | A poster's own count for each product | The poster | The poster only |
 | trail | Who did what and when, on every order | The module | The picker for her own, the coordinator for all |
 
 An order and a group order keep their own copy of the terms they started with. A poster who wants different terms asks the pickers to revise, and each answer is kept against the version it was given to. A yes is kept as a record, and the module never works out a poster's stock.

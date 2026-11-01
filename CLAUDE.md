@@ -31,6 +31,6 @@ Write no comments of any kind in code. A name, a type or a smaller function carr
 
 `make build`, `make test`, `make vet`. Tests run in memory; a test that needs Postgres is behind the `integration` tag.
 
-## Status (2026-10-28, HS210)
+## Status
 
-Built: `market.blueprint.json` (eleven roles), `models/`, `MarketManager` over `specstore` with caller-bound visibility, `market.operations.json` and `routes/` over `dispatch`, `market.wakala.json` with `SpecFor`/`SpecForMount`, two example domains, `cmd/ddl`. Bidding (quotes, agent drafts, the `agent` actor) built 2026-10-29, see [documentation/2. design/bidding.md](documentation/2.%20design/bidding.md). Open: M4 (workflow gates) and mounting in wakala-api. See [documentation/2. design/declared-domain.md](documentation/2.%20design/declared-domain.md).
+Built: `market.blueprint.json` (thirteen roles), `models/`, `MarketManager` over `specstore` with caller-bound visibility, `market.operations.json` and `routes/` over `dispatch`, `market.wakala.json` with `SpecFor`/`SpecForMount`, two example domains, `cmd/ddl`. Bidding (quotes, agent drafts, the `agent` actor) built 2026-10-29, see [documentation/2. design/bidding.md](documentation/2.%20design/bidding.md). Workflow gates and the version an order keeps are built, see [documentation/2. design/workflows.md](documentation/2.%20design/workflows.md). Mounted per agency in `mwanachama-wakala-api`, gated, over REST and MCP (HS212, HS272). Open: M4, reading an agency's step actors from the agency backend. See [documentation/2. design/declared-domain.md](documentation/2.%20design/declared-domain.md).
