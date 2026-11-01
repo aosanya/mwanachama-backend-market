@@ -99,6 +99,7 @@ type MarketManager interface {
 	ListGroupOrders(ctx context.Context, caller string, limit int, after string) ([]GroupOrderView, error)
 	GroupOrderTrail(ctx context.Context, caller, id string) ([]Trail, error)
 	GetGroupOrder(ctx context.Context, caller, id string) (GroupOrderView, error)
+	GroupOrderPoster(ctx context.Context, groupOrderID string) (OrderPoster, error)
 }
 
 type marketManager struct {

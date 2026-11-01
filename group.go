@@ -19,6 +19,11 @@ func (m *marketManager) StartGroupOrder(ctx context.Context, caller string, g Gr
 	if g.Minimum <= 0 {
 		return g, fmt.Errorf("%w: a group order needs a minimum", ErrInvalid)
 	}
+	posterID, err := m.posterWhenUnnamed(ctx, g.PosterID)
+	if err != nil {
+		return g, err
+	}
+	g.PosterID = posterID
 	var p Poster
 	if err := m.get(ctx, RolePoster, g.PosterID, &p); err != nil {
 		return g, err

@@ -850,6 +850,28 @@
       ],
       "status": 201
     },
+    "get_group_order_poster": {
+      "method": "GET",
+      "path": "/group-order-poster",
+      "call": "GroupOrderPoster",
+      "action": "market.group_order.poster",
+      "tool": "market_get_group_order_poster",
+      "title": "Which poster a group order buys from",
+      "description": "The poster a group order buys from: the order's own poster when groupOrderID names one, else the only approved poster. With no approved poster or several, it says so and market_start_group_order needs a poster_id.",
+      "args": [
+        {
+          "from": "query",
+          "as": "groupOrderID",
+          "refers": "market.group_order",
+          "description": "The group order, when one exists."
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ]
+    },
     "list_group_orders": {
       "method": "GET",
       "path": "/group-orders",
