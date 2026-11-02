@@ -875,11 +875,11 @@
     "list_group_orders": {
       "method": "GET",
       "path": "/group-orders",
-      "call": "ListGroupOrders",
+      "call": "ListGroupOrdersBy",
       "action": "market.group_order.list",
       "tool": "market_list_group_orders",
       "title": "List group orders",
-      "description": "Each shown as the caller may see it, in pages ordered by id: the first 50 by default. To see more, pass the id of the last group order of the page as after.",
+      "description": "Each shown as the caller may see it, in pages ordered by id: the first 50 by default. To see more, pass the id of the last group order of the page as after. Pass mine as true for only the group orders the caller has a line in, started or owns the poster of, and state for only those open, revising, sent, closed or cancelled; both are applied before the page is cut.",
       "args": [
         {
           "from": "caller",
@@ -895,6 +895,16 @@
           "from": "query",
           "as": "after",
           "description": "The id of the last group order already shown. Only later ones are returned."
+        },
+        {
+          "from": "query",
+          "as": "mine",
+          "description": "True for only the group orders the caller has a line in, started or owns the poster of."
+        },
+        {
+          "from": "query",
+          "as": "state",
+          "description": "Only group orders in this state: open, revising, sent, closed or cancelled."
         }
       ],
       "returns": [

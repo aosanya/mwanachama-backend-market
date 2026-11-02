@@ -97,6 +97,7 @@ type MarketManager interface {
 	CallOffGroupOrder(ctx context.Context, caller, id string) (GroupOrder, error)
 	PromiseGroupOrder(ctx context.Context, caller, id, date, note string) (GroupOrder, error)
 	ListGroupOrders(ctx context.Context, caller string, limit int, after string) ([]GroupOrderView, error)
+	ListGroupOrdersBy(ctx context.Context, caller string, limit int, after string, mine bool, state string) ([]GroupOrderView, error)
 	GroupOrderTrail(ctx context.Context, caller, id string) ([]Trail, error)
 	GetGroupOrder(ctx context.Context, caller, id string) (GroupOrderView, error)
 	GroupOrderPoster(ctx context.Context, groupOrderID string) (OrderPoster, error)

@@ -255,26 +255,65 @@ func (m *marketManager) AnswerRevision(ctx context.Context, caller, id, answer s
 }
 
 func (m *marketManager) view(ctx context.Context, caller string, g GroupOrder) (GroupOrderView, error) {
-	lines, err := listOf[Line](m, m.q(ctx, RoleLine).Where("group_order_id = ?", g.ID), RoleLine)
+	views, err := m.viewAll(ctx, caller, []GroupOrder{g})
 	if err != nil {
 		return GroupOrderView{}, err
 	}
+	return views[0], nil
+}
+
+func (m *marketManager) viewAll(ctx context.Context, caller string, gs []GroupOrder) ([]GroupOrderView, error) {
+	views := make([]GroupOrderView, 0, len(gs))
+	if len(gs) == 0 {
+		return views, nil
+	}
+	ids := make([]string, len(gs))
+	for i, g := range gs {
+		ids[i] = g.ID
+	}
+	lines, err := listOf[Line](m, m.q(ctx, RoleLine).Where("group_order_id IN ?", ids), RoleLine)
+	if err != nil {
+		return nil, err
+	}
+	linesOf := map[string][]Line{}
+	for _, l := range lines {
+		linesOf[l.GroupOrderID] = append(linesOf[l.GroupOrderID], l)
+	}
+	owned, err := m.ownedPosters(ctx, caller)
+	if err != nil {
+		return nil, err
+	}
+	coordinates := m.coordinatesOnce(ctx, caller)
+	for _, g := range gs {
+		seesAll := (g.Coordinator == caller && caller != "") || owned[g.PosterID] || coordinates()
+		views = append(views, m.assembleView(ctx, caller, g, linesOf[g.ID], seesAll))
+	}
+	return views, nil
+}
+
+func (m *marketManager) coordinatesOnce(ctx context.Context, caller string) func() bool {
+	var known, coordinates bool
+	return func() bool {
+		if !known {
+			coordinates, known = m.isWho(ctx, WhoCoordinator, caller, parties{}), true
+		}
+		return coordinates
+	}
+}
+
+func (m *marketManager) assembleView(ctx context.Context, caller string, g GroupOrder, lines []Line, seesAll bool) GroupOrderView {
 	v := GroupOrderView{GroupOrder: g, Lines: []Line{}}
 	for _, l := range lines {
 		if l.Answer != models.AnswerNo {
 			v.Total += l.Quantity
 			v.Count++
 		}
-	}
-	_, posterErr := m.posterOwnedBy(ctx, caller, g.PosterID)
-	seesAll := (g.Coordinator == caller && caller != "") || posterErr == nil || m.isWho(ctx, WhoCoordinator, caller, parties{})
-	for _, l := range lines {
 		if seesAll || (l.Picker == caller && caller != "") {
 			l.PickerName = m.nameOf(ctx, l.Picker)
 			v.Lines = append(v.Lines, l)
 		}
 	}
-	return v, nil
+	return v
 }
 
 func (m *marketManager) GetGroupOrder(ctx context.Context, caller, id string) (GroupOrderView, error) {
@@ -291,8 +330,26 @@ const (
 )
 
 func (m *marketManager) ListGroupOrders(ctx context.Context, caller string, limit int, after string) ([]GroupOrderView, error) {
+	return m.ListGroupOrdersBy(ctx, caller, limit, after, false, "")
+}
+
+func knownGroupState(state string) bool {
+	switch state {
+	case models.GroupOpen, models.GroupRevising, models.GroupSent, models.GroupClosed, models.GroupCancelled:
+		return true
+	}
+	return false
+}
+
+func (m *marketManager) ListGroupOrdersBy(ctx context.Context, caller string, limit int, after string, mine bool, state string) ([]GroupOrderView, error) {
 	if limit < 0 {
 		return nil, fmt.Errorf("%w: a page is not negative", ErrInvalid)
+	}
+	if state != "" && !knownGroupState(state) {
+		return nil, fmt.Errorf("%w: %q is not a group order state", ErrInvalid, state)
+	}
+	if mine && caller == "" {
+		return []GroupOrderView{}, nil
 	}
 	if limit == 0 {
 		limit = defaultGroupOrderPage
@@ -304,19 +361,19 @@ func (m *marketManager) ListGroupOrders(ctx context.Context, caller string, limi
 	if after != "" {
 		q = q.Where("id > ?", after)
 	}
+	if state != "" {
+		q = q.Where("state = ?", state)
+	}
+	if mine {
+		q = q.Where("(coordinator = ? OR poster_id IN (?) OR id IN (?))", caller,
+			m.q(ctx, RolePoster).Select("id").Where("owner = ?", caller),
+			m.q(ctx, RoleLine).Select("group_order_id").Where("picker = ?", caller))
+	}
 	gs, err := listOf[GroupOrder](m, q, RoleGroupOrder)
 	if err != nil {
 		return nil, err
 	}
-	out := []GroupOrderView{}
-	for _, g := range gs {
-		v, err := m.view(ctx, caller, g)
-		if err != nil {
-			return nil, err
-		}
-		out = append(out, v)
-	}
-	return out, nil
+	return m.viewAll(ctx, caller, gs)
 }
 
 func (m *marketManager) GroupOrderTrail(ctx context.Context, caller, id string) ([]Trail, error) {
