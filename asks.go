@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"gorm.io/gorm"
+
 	"github.com/aosanya/mwanachama-backend-market/models"
 )
 
@@ -147,41 +149,76 @@ func (m *marketManager) WithdrawAsk(ctx context.Context, caller, id string) (Ask
 }
 
 func (m *marketManager) ListAsks(ctx context.Context, caller string) ([]Ask, error) {
-	all, err := listOf[Ask](m, m.q(ctx, RoleAsk), RoleAsk)
+	return m.ListAsksBy(ctx, caller, "", "")
+}
+
+func knownAnswer(answer string) bool {
+	switch answer {
+	case models.AnswerWaiting, models.AnswerYes, models.AnswerNo, models.AnswerWithdrawn:
+		return true
+	}
+	return false
+}
+
+func knownYesState(state string) bool {
+	switch state {
+	case models.YesOpen, models.YesDelivered, models.YesCalledOff:
+		return true
+	}
+	return false
+}
+
+func (m *marketManager) callersOwn(ctx context.Context, q *gorm.DB, caller string) *gorm.DB {
+	if caller == "" {
+		return q.Where("picker = ?", caller)
+	}
+	return q.Where("(picker = ? OR poster_id IN (?))", caller, m.q(ctx, RolePoster).Select("id").Where("owner = ?", caller))
+}
+
+func (m *marketManager) ListAsksBy(ctx context.Context, caller, requestID, answer string) ([]Ask, error) {
+	if answer != "" && !knownAnswer(answer) {
+		return nil, fmt.Errorf("%w: %q is not an answer", ErrInvalid, answer)
+	}
+	q := m.callersOwn(ctx, m.q(ctx, RoleAsk), caller)
+	if requestID != "" {
+		q = q.Where("request_id = ?", requestID)
+	}
+	if answer != "" {
+		q = q.Where("answer = ?", answer)
+	}
+	asks, err := listOf[Ask](m, q, RoleAsk)
 	if err != nil {
 		return nil, err
 	}
-	owned, err := m.ownedPosters(ctx, caller)
-	if err != nil {
-		return nil, err
+	for i := range asks {
+		asks[i].PickerName = m.nameOf(ctx, asks[i].Picker)
 	}
-	var out []Ask
-	for _, a := range all {
-		if a.Picker == caller || owned[a.PosterID] {
-			a.PickerName = m.nameOf(ctx, a.Picker)
-			out = append(out, a)
-		}
-	}
-	return out, nil
+	return asks, nil
 }
 
 func (m *marketManager) ListYeses(ctx context.Context, caller string) ([]Yes, error) {
-	all, err := listOf[Yes](m, m.q(ctx, RoleYes), RoleYes)
+	return m.ListYesesBy(ctx, caller, "", "")
+}
+
+func (m *marketManager) ListYesesBy(ctx context.Context, caller, requestID, state string) ([]Yes, error) {
+	if state != "" && !knownYesState(state) {
+		return nil, fmt.Errorf("%w: %q is not a state of a yes", ErrInvalid, state)
+	}
+	q := m.callersOwn(ctx, m.q(ctx, RoleYes), caller)
+	if requestID != "" {
+		q = q.Where("ask_id IN (?)", m.q(ctx, RoleAsk).Select("id").Where("request_id = ?", requestID))
+	}
+	if state != "" {
+		q = q.Where("state = ?", state)
+	}
+	yeses, err := listOf[Yes](m, q, RoleYes)
 	if err != nil {
 		return nil, err
 	}
-	owned, err := m.ownedPosters(ctx, caller)
-	if err != nil {
-		return nil, err
+	for i := range yeses {
+		yeses[i].PickerName = m.nameOf(ctx, yeses[i].Picker)
 	}
-	var out []Yes
-	for _, y := range all {
-		if y.Picker == caller || owned[y.PosterID] {
-			y.PickerName = m.nameOf(ctx, y.Picker)
-			out = append(out, y)
-		}
-	}
-	return out, nil
+	return yeses, nil
 }
 
 func (m *marketManager) ownedPosters(ctx context.Context, caller string) (map[string]bool, error) {

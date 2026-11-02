@@ -410,16 +410,26 @@
     "list_asks": {
       "method": "GET",
       "path": "/asks",
-      "call": "ListAsks",
+      "call": "ListAsksBy",
       "action": "market.ask.list",
       "tool": "market_list_asks",
       "title": "List asks",
-      "description": "The caller's asks, or those put to the caller's posters.",
+      "description": "The caller's asks, or those put to the caller's posters. Pass request_id for only the asks about one request and answer for only those waiting, yes, no or withdrawn; both are applied in the query.",
       "args": [
         {
           "from": "caller",
           "as": "caller",
           "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "query",
+          "as": "request_id",
+          "description": "Only the asks made about this request."
+        },
+        {
+          "from": "query",
+          "as": "answer",
+          "description": "Only asks with this answer: waiting, yes, no or withdrawn."
         }
       ],
       "returns": [
@@ -490,16 +500,26 @@
     "list_yeses": {
       "method": "GET",
       "path": "/yeses",
-      "call": "ListYeses",
+      "call": "ListYesesBy",
       "action": "market.yes.list",
       "tool": "market_list_yeses",
       "title": "List yeses",
-      "description": "The caller's yeses.",
+      "description": "The caller's yeses. Pass request_id for only the yeses to asks about one request and state for only those open, delivered or called_off; both are applied in the query.",
       "args": [
         {
           "from": "caller",
           "as": "caller",
           "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "query",
+          "as": "request_id",
+          "description": "Only the yeses to asks made about this request."
+        },
+        {
+          "from": "query",
+          "as": "state",
+          "description": "Only yeses in this state: open, delivered or called_off."
         }
       ],
       "returns": [
