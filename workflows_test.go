@@ -98,7 +98,7 @@ func TestADefaultCancelIsAtOnceByThePickerAndClosesThePostersYes(t *testing.T) {
 	if err != nil || got.State != models.OrderCancelled {
 		t.Fatal(got.State, err)
 	}
-	ys, _ := m.ListYeses(ctx, "bea")
+	ys, _ := m.ListYesesBy(ctx, "bea", "", "")
 	if len(ys) != 1 || ys[0].State != models.YesCalledOff {
 		t.Fatalf("the open yes must close: %+v", ys)
 	}
@@ -116,7 +116,7 @@ func TestAReplacedCancelWorkflowChangesWhoCancels(t *testing.T) {
 	if err != nil || got.State != models.OrderCancelled {
 		t.Fatal(got.State, err)
 	}
-	ys, _ := m.ListYeses(ctx, "bea")
+	ys, _ := m.ListYesesBy(ctx, "bea", "", "")
 	for _, y := range ys {
 		if y.State != models.YesOpen {
 			t.Fatal("a replaced cancel that does not close yeses must leave them open")

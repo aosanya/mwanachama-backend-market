@@ -60,7 +60,7 @@ func TestTheGroupOrderListComesInPagesByKeyAndEveryOrderIsReadOnce(t *testing.T)
 	seen := map[string]bool{}
 	after, pages := "", 0
 	for {
-		page, err := m.ListGroupOrders(ctx, "coord", 2, after)
+		page, err := m.ListGroupOrdersBy(ctx, "coord", 2, after, false, "")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -82,11 +82,11 @@ func TestTheGroupOrderListComesInPagesByKeyAndEveryOrderIsReadOnce(t *testing.T)
 	if len(seen) != 5 || pages != 3 {
 		t.Fatalf("saw %d orders in %d pages", len(seen), pages)
 	}
-	whole, _ := m.ListGroupOrders(ctx, "coord", 0, "")
+	whole, _ := m.ListGroupOrdersBy(ctx, "coord", 0, "", false, "")
 	if len(whole) != 5 {
 		t.Fatalf("the default page held %d", len(whole))
 	}
-	if _, err := m.ListGroupOrders(ctx, "coord", -1, ""); !errors.Is(err, market.ErrInvalid) {
+	if _, err := m.ListGroupOrdersBy(ctx, "coord", -1, "", false, ""); !errors.Is(err, market.ErrInvalid) {
 		t.Fatalf("a negative page: %v", err)
 	}
 }

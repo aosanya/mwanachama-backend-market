@@ -63,9 +63,7 @@ type MarketManager interface {
 	AnswerAskWithOffer(ctx context.Context, caller, askID, answer, date, note, offerID string, price float64) (Ask, error)
 	AnswerAskWithMinutes(ctx context.Context, caller, askID, answer, date, note, offerID string, price float64, minutes int) (Ask, error)
 	WithdrawAsk(ctx context.Context, caller, id string) (Ask, error)
-	ListAsks(ctx context.Context, caller string) ([]Ask, error)
 	ListAsksBy(ctx context.Context, caller, requestID, answer string) ([]Ask, error)
-	ListYeses(ctx context.Context, caller string) ([]Yes, error)
 	ListYesesBy(ctx context.Context, caller, requestID, state string) ([]Yes, error)
 
 	CreateNotice(ctx context.Context, caller string, n Notice) (Notice, error)
@@ -100,7 +98,6 @@ type MarketManager interface {
 	DecideSilentLine(ctx context.Context, caller, id, lineID, decision string) (Line, error)
 	CallOffGroupOrder(ctx context.Context, caller, id string) (GroupOrder, error)
 	PromiseGroupOrder(ctx context.Context, caller, id, date, note string) (GroupOrder, error)
-	ListGroupOrders(ctx context.Context, caller string, limit int, after string) ([]GroupOrderView, error)
 	ListGroupOrdersBy(ctx context.Context, caller string, limit int, after string, mine bool, state string) ([]GroupOrderView, error)
 	GroupOrderTrail(ctx context.Context, caller, id string) ([]Trail, error)
 	GetGroupOrder(ctx context.Context, caller, id string) (GroupOrderView, error)

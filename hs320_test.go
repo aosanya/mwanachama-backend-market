@@ -28,7 +28,7 @@ func TestTheAskerWithdrawsAWaitingAskAndBothSidesSeeItWithdrawn(t *testing.T) {
 		t.Fatalf("withdraw: %+v %v", got, err)
 	}
 	for _, caller := range []string{"bea", "ann"} {
-		asks, _ := m.ListAsks(ctx(), caller)
+		asks, _ := m.ListAsksBy(ctx(), caller, "", "")
 		if len(asks) != 1 || asks[0].Answer != models.AnswerWithdrawn {
 			t.Fatalf("%s sees %+v", caller, asks)
 		}
@@ -42,7 +42,7 @@ func TestAStrangerAndThePosterCannotWithdrawAnAsk(t *testing.T) {
 			t.Fatalf("%q withdrew: %v", caller, err)
 		}
 	}
-	asks, _ := m.ListAsks(ctx(), "bea")
+	asks, _ := m.ListAsksBy(ctx(), "bea", "", "")
 	if asks[0].Answer != models.AnswerWaiting {
 		t.Fatalf("the ask changed: %+v", asks[0])
 	}
@@ -61,7 +61,7 @@ func TestAnAnsweredAskCannotBeWithdrawn(t *testing.T) {
 		if _, err := m.WithdrawAsk(ctx(), "bea", a.ID); !errors.Is(err, market.ErrConflict) {
 			t.Fatalf("withdrew after %s: %v", answer, err)
 		}
-		asks, _ := m.ListAsks(ctx(), "bea")
+		asks, _ := m.ListAsksBy(ctx(), "bea", "", "")
 		if asks[0].Answer != answer {
 			t.Fatalf("the answer changed: %+v", asks[0])
 		}
@@ -79,7 +79,7 @@ func TestAWithdrawnAskCannotBeAnsweredOrWithdrawnAgain(t *testing.T) {
 	if _, err := m.WithdrawAsk(ctx(), "bea", a.ID); !errors.Is(err, market.ErrConflict) {
 		t.Fatalf("withdrew twice: %v", err)
 	}
-	if ys, _ := m.ListYeses(ctx(), "bea"); len(ys) != 0 {
+	if ys, _ := m.ListYesesBy(ctx(), "bea", "", ""); len(ys) != 0 {
 		t.Fatalf("a yes came from a withdrawn ask: %+v", ys)
 	}
 }

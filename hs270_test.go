@@ -20,7 +20,7 @@ func TestAnOrderMadeFromAYesKeepsTheYesAndItsPromisedDate(t *testing.T) {
 	if _, err := m.AnswerAsk(ctx, "ann", a.ID, models.AnswerYes, "2026-11-01", ""); err != nil {
 		t.Fatal(err)
 	}
-	ys, _ := m.ListYeses(ctx, "bea")
+	ys, _ := m.ListYesesBy(ctx, "bea", "", "")
 	ord, err := m.BuyNow(ctx, "bea", o.ID, 2, ys[0].ID)
 	if err != nil || ord.YesID != ys[0].ID || ord.PromisedDate != "2026-11-01" {
 		t.Fatalf("order %+v err %v", ord, err)
@@ -49,14 +49,14 @@ func TestReadsCarryThePickersNameWhenTheHostSuppliesOne(t *testing.T) {
 	g, _ := m.StartGroupOrder(ctx, "coord", market.GroupOrder{PosterID: p.ID, Price: 3, Minimum: 10})
 	m.JoinGroupOrder(ctx, "bea", g.ID, 4)
 
-	asks, _ := m.ListAsks(ctx, "ann")
+	asks, _ := m.ListAsksBy(ctx, "ann", "", "")
 	orders, _ := m.ListOrders(ctx, "ann")
 	view, _ := m.GetGroupOrder(ctx, "coord", g.ID)
 	if asks[0].PickerName != "" || orders[0].PickerName != "" || view.Lines[0].PickerName != "" {
 		t.Fatal("no names were supplied")
 	}
 	m.UseNames(upperNames)
-	asks, _ = m.ListAsks(ctx, "ann")
+	asks, _ = m.ListAsksBy(ctx, "ann", "", "")
 	orders, _ = m.ListOrders(ctx, "ann")
 	got, _ := m.GetOrder(ctx, "bea", ord.ID)
 	view, _ = m.GetGroupOrder(ctx, "coord", g.ID)
@@ -107,13 +107,13 @@ func TestYesesAndRequestsCarryThePickersNameWhenTheHostSuppliesOne(t *testing.T)
 	r, _ := m.CreateRequest(ctx, "bea", market.Request{Wanted: "beans"})
 	a, _ := m.CreateAsk(ctx, "bea", market.Ask{PosterID: p.ID, RequestID: r.ID, Question: "have any?"})
 	m.AnswerAsk(ctx, "ann", a.ID, models.AnswerYes, "2026-11-01", "")
-	ys, _ := m.ListYeses(ctx, "ann")
+	ys, _ := m.ListYesesBy(ctx, "ann", "", "")
 	asked, _ := m.GetRequest(ctx, "ann", r.ID)
 	if ys[0].PickerName != "" || asked.PickerName != "" {
 		t.Fatal("no names were supplied")
 	}
 	m.UseNames(upperNames)
-	ys, _ = m.ListYeses(ctx, "ann")
+	ys, _ = m.ListYesesBy(ctx, "ann", "", "")
 	asked, err := m.GetRequest(ctx, "ann", r.ID)
 	own, _ := m.GetRequest(ctx, "bea", r.ID)
 	if err != nil || ys[0].PickerName != "Name of bea" || asked.PickerName != "Name of bea" || own.PickerName != "Name of bea" {

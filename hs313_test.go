@@ -16,7 +16,7 @@ func TestAnAskKeepsTheProductItIsAboutForBothSides(t *testing.T) {
 		t.Fatalf("ask %+v err %v", a, err)
 	}
 	for _, caller := range []string{"bea", "ann"} {
-		asks, _ := m.ListAsks(ctx, caller)
+		asks, _ := m.ListAsksBy(ctx, caller, "", "")
 		if len(asks) != 1 || asks[0].Product != "maize flour" {
 			t.Fatalf("%s sees %+v", caller, asks)
 		}

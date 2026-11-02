@@ -329,10 +329,6 @@ const (
 	largestGroupOrderPage = 200
 )
 
-func (m *marketManager) ListGroupOrders(ctx context.Context, caller string, limit int, after string) ([]GroupOrderView, error) {
-	return m.ListGroupOrdersBy(ctx, caller, limit, after, false, "")
-}
-
 func knownGroupState(state string) bool {
 	switch state {
 	case models.GroupOpen, models.GroupRevising, models.GroupSent, models.GroupClosed, models.GroupCancelled:

@@ -17,7 +17,7 @@ func TestARiderYesCarriesTheMinutesHeIsAwayToBothSides(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, caller := range []string{"bea", "ann"} {
-		ys, _ := m.ListYeses(ctx, caller)
+		ys, _ := m.ListYesesBy(ctx, caller, "", "")
 		if len(ys) != 1 || ys[0].Minutes != 12 {
 			t.Fatalf("%s sees %+v", caller, ys)
 		}
@@ -38,7 +38,7 @@ func TestMinutesAreNeverNegativeAndANoCarriesNone(t *testing.T) {
 	if _, err := m.AnswerAsk(ctx, "ann", a.ID, models.AnswerYes, "2026-11-01", ""); err != nil {
 		t.Fatal(err)
 	}
-	ys, _ := m.ListYeses(ctx, "bea")
+	ys, _ := m.ListYesesBy(ctx, "bea", "", "")
 	if len(ys) != 1 || ys[0].Minutes != 0 {
 		t.Fatalf("a yes without minutes: %+v", ys)
 	}

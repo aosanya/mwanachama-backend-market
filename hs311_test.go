@@ -25,7 +25,7 @@ func TestAGroupOrderCarriesTheShopsPromisedDateAndNoteToEveryReader(t *testing.T
 			t.Fatalf("%s sees %+v", caller, v.GroupOrder)
 		}
 	}
-	list, _ := m.ListGroupOrders(ctx, "bea", 0, "")
+	list, _ := m.ListGroupOrdersBy(ctx, "bea", 0, "", false, "")
 	if len(list) != 1 || list[0].PromisedDate != "2026-11-05" {
 		t.Fatalf("list %+v", list)
 	}

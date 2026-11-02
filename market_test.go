@@ -51,7 +51,7 @@ func TestAReplyNeverOpensAnOrderAndSilenceStaysWaiting(t *testing.T) {
 	p := approvedPoster(t, m, ctx, "ann")
 	r, _ := m.CreateRequest(ctx, "bea", market.Request{Wanted: "beans"})
 	a, _ := m.CreateAsk(ctx, "bea", market.Ask{PosterID: p.ID, RequestID: r.ID, Question: "have any?"})
-	if got, _ := m.ListAsks(ctx, "bea"); got[0].Answer != models.AnswerWaiting {
+	if got, _ := m.ListAsksBy(ctx, "bea", "", ""); got[0].Answer != models.AnswerWaiting {
 		t.Fatal("silence must stay waiting")
 	}
 	if _, err := m.AnswerAsk(ctx, "ann", a.ID, models.AnswerYes, "", ""); err == nil {
@@ -63,7 +63,7 @@ func TestAReplyNeverOpensAnOrderAndSilenceStaysWaiting(t *testing.T) {
 	if orders, _ := m.ListOrders(ctx, "bea"); len(orders) != 0 {
 		t.Fatal("a reply opened an order")
 	}
-	if ys, _ := m.ListYeses(ctx, "bea"); len(ys) != 1 {
+	if ys, _ := m.ListYesesBy(ctx, "bea", "", ""); len(ys) != 1 {
 		t.Fatal("the yes should be kept as a record")
 	}
 }

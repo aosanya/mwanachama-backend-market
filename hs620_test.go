@@ -51,7 +51,7 @@ func startOrdersJoinedBy(t *testing.T, m market.MarketManager, ctx context.Conte
 func readsOfOneList(t *testing.T, m market.MarketManager, ctx context.Context, reads *int, caller string) int {
 	t.Helper()
 	before := *reads
-	if _, err := m.ListGroupOrders(ctx, caller, 0, ""); err != nil {
+	if _, err := m.ListGroupOrdersBy(ctx, caller, 0, "", false, ""); err != nil {
 		t.Fatal(err)
 	}
 	return *reads - before
@@ -97,7 +97,7 @@ func TestAMemberOfSixtyGroupOrdersGetsExactlyHerThreeInOneCall(t *testing.T) {
 			t.Fatalf("bea sees %+v", v.Lines)
 		}
 	}
-	all, _ := m.ListGroupOrders(ctx, "bea", 0, "")
+	all, _ := m.ListGroupOrdersBy(ctx, "bea", 0, "", false, "")
 	if len(all) != 50 {
 		t.Fatalf("the page without the filter held %d", len(all))
 	}

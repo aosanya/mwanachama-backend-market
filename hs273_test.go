@@ -60,7 +60,7 @@ func TestTwoMarketsInOneAgencyAreSeparate(t *testing.T) {
 	posters, _ := harvest.ListPosters(ctx, "")
 	offers, _ := harvest.ListOffers(ctx, "")
 	orders, _ := harvest.ListOrders(ctx, "bea")
-	groups, _ := harvest.ListGroupOrders(ctx, "coordinator", 0, "")
+	groups, _ := harvest.ListGroupOrdersBy(ctx, "coordinator", 0, "", false, "")
 	if len(posters) != 0 || len(offers) != 0 || len(orders) != 0 || len(groups) != 0 {
 		t.Fatalf("Harvest sees Inputs' posters %d, offers %d, orders %d, group orders %d", len(posters), len(offers), len(orders), len(groups))
 	}

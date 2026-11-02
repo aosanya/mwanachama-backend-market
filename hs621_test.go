@@ -108,18 +108,14 @@ func TestTheAskListRefusesAnAnswerThatIsNotOne(t *testing.T) {
 	}
 }
 
-func TestTheAskListWithNeitherFilterIsTheListItWas(t *testing.T) {
+func TestTheAskListWithNeitherFilterHoldsEveryAskOfTheCaller(t *testing.T) {
 	w := newAskWorld(t)
-	was, err := w.m.ListAsks(w.ctx, "bea")
+	got, err := w.m.ListAsksBy(w.ctx, "bea", "", "")
 	if err != nil {
 		t.Fatal(err)
 	}
-	now, err := w.m.ListAsksBy(w.ctx, "bea", "", "")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if strings.Join(idsOfAsks(was), ",") != strings.Join(idsOfAsks(now), ",") || len(was) != 2 {
-		t.Fatalf("was %v now %v", idsOfAsks(was), idsOfAsks(now))
+	if len(got) != 2 {
+		t.Fatalf("bea sees %v", idsOfAsks(got))
 	}
 }
 

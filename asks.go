@@ -149,10 +149,6 @@ func (m *marketManager) WithdrawAsk(ctx context.Context, caller, id string) (Ask
 	return a, m.update(ctx, RoleAsk, a.ID, a)
 }
 
-func (m *marketManager) ListAsks(ctx context.Context, caller string) ([]Ask, error) {
-	return m.ListAsksBy(ctx, caller, "", "")
-}
-
 func knownAnswer(answer string) bool {
 	switch answer {
 	case models.AnswerWaiting, models.AnswerYes, models.AnswerNo, models.AnswerWithdrawn:
@@ -195,10 +191,6 @@ func (m *marketManager) ListAsksBy(ctx context.Context, caller, requestID, answe
 		asks[i].PickerName = m.nameOf(ctx, asks[i].Picker)
 	}
 	return asks, nil
-}
-
-func (m *marketManager) ListYeses(ctx context.Context, caller string) ([]Yes, error) {
-	return m.ListYesesBy(ctx, caller, "", "")
 }
 
 func (m *marketManager) ListYesesBy(ctx context.Context, caller, requestID, state string) ([]Yes, error) {
