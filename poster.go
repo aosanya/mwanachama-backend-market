@@ -141,6 +141,16 @@ func (m *marketManager) UpdateOffer(ctx context.Context, caller string, o Offer)
 		return o, err
 	}
 	o.PosterID, o.PostedAt = old.PosterID, m.now()
+	o.Product, o.Category = strings.TrimSpace(o.Product), strings.TrimSpace(o.Category)
+	if o.Product == "" {
+		o.Product = old.Product
+	}
+	if o.Category == "" {
+		o.Category = old.Category
+		if o.Product != old.Product {
+			o.Category = m.categoryOf(ctx, o.Product)
+		}
+	}
 	if err := m.checks(RoleOffer, o); err != nil {
 		return o, err
 	}

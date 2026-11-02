@@ -199,7 +199,7 @@
       "action": "market.offer.update",
       "tool": "market_update_offer",
       "title": "Update an offer",
-      "description": "A poster changes his offer. Orders already made keep their price.",
+      "description": "A poster changes his offer. Orders already made keep their price. A product or category left out keeps the offer's own; a new product without a category takes the category of that product.",
       "args": [
         {
           "from": "caller",
@@ -862,7 +862,7 @@
       "action": "market.group_order.start",
       "tool": "market_start_group_order",
       "title": "Start a group order",
-      "description": "A minimum is required.",
+      "description": "A minimum is required. Leave poster_id out to start it with the only approved poster.",
       "args": [
         {
           "from": "caller",
