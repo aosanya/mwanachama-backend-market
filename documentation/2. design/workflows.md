@@ -8,7 +8,7 @@ Investigated read-only in `mwanachama-backend-agency`. A `Workflow` has a name, 
 
 ## What is built
 
-- `DefaultWorkflows()` holds the defaults as data: Buy now (asked: picker, yes: poster, paid: poster), Cancel (cancelled: picker, closes the poster's open yes), Group order (start, sent, line_paid, decided, called_off and paid: coordinator), Approve a poster (approved: coordinator). Who says yes is `picker`, `poster`, `coordinator` or `none`; `none` refuses everybody.
+- `DefaultWorkflows()` holds the defaults as data: Buy now (asked: picker, yes: poster, paid: poster), Cancel (cancelled: picker, closes the poster's open yes), Group order (start, sent, line_paid, decided, reopened and called_off: coordinator), Approve a poster (approved: coordinator). Who says yes is `picker`, `poster`, `coordinator` or `none`; `none` refuses everybody.
 - `UseWorkflows(WorkflowSource)` lets a host supply an agency's workflow by name and version. A source returns `(workflow, found, err)`; not found falls back to the default; a workflow that is malformed, names the wrong workflow or answers a different version than asked is `ErrInvalid`.
 - `UseCoordinators(func)` tells the manager who the agency's coordinators are. With none supplied nobody is a coordinator, so approving a poster and starting a group order are refused.
 - A new order and a new group order are stamped with the version the source returns for Buy now and Group order. Later steps on an order ask the source for that stamped version, so an order keeps the workflow it started with when the source moves on. An agency versions its workflows as a set, so one stamp serves the order's Buy now and Cancel steps.
@@ -31,8 +31,13 @@ A fifth default, Bidding (quoted: poster, drafted: agent, countered: picker, acc
 
 Both steps are new in the default Group order workflow. A replacement workflow from `UseWorkflows` that omits them answers `ErrInvalid` on these two acts, as it does for `sent` and `line_paid`.
 
+## Taking a revised order back to open (HS706)
+
+`ReopenGroupOrder` (step `reopened`) moves a revising group order back to `open` so it can be sent (decisions 144 and 145: an exception to a workflow is a step of that workflow, said by a named person; nothing runs on a timer, so the farmers' yeses and the total alone do not reopen it). The coordinator who started the order says it by default. An order in any other state answers `ErrConflict`, a caller the step does not name answers `ErrForbidden`, and the terms version, the lines' answers and the total are left as they are. It adds a trail entry, "took the revised order back to open". The tool is `market_reopen` with `groupOrderID`; the route is `POST /group-orders/{groupOrderID}/reopen`. A replacement workflow from `UseWorkflows` that omits the step answers `ErrInvalid` on this act, as it does for `sent`.
+
+The default Group order workflow has no Paid step (decisions 89 and 90): who has paid is a row in the agency's Payments record. Buy now keeps its own `paid` step.
+
 ## Not built
 
 - The agency-side who-says-yes in a workflow step: an agency's step actors cannot be read from the agency backend yet, and the step's role would have to map onto `picker`, `poster`, `coordinator`, `agent` or `none` (decision 94 lets a step name any role or group of the agency). Open with the owner (Q72, who holds a role).
-- The group order's `paid` step (the whole order paid) has no method. Decisions 89 and 90 say the Group order has no Paid step and that who has paid is a row in the agency's Payments record; the per-line `Paid` mark built here is the tick decision 90 retires. Open with the owner.
-- A revising group order has no way back to open, so it cannot be sent: Q93 (the total settles it, the coordinator settles it, or the shop settles it).
+- The per-line `Paid` mark and the `line_paid` step are still here; decision 90 retires the tick.

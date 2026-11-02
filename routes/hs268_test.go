@@ -77,6 +77,7 @@ func TestTheGroupGateToolsAreNamedAfterTheirActionsAndTakeTheConsolesArguments(t
 	}{
 		"market_decide_silent_line": {"market.group_order.decide_silent_line", []string{"groupOrderID", "lineID", "decision"}},
 		"market_call_off":           {"market.group_order.call_off", []string{"groupOrderID"}},
+		"market_reopen":             {"market.group_order.reopen", []string{"groupOrderID"}},
 	}
 	seen := 0
 	for _, tl := range tools {

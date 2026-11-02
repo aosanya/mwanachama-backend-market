@@ -6,7 +6,7 @@ The module declares thirteen objects: `poster` (a supplier, a buyer or a rider),
 
 Its rules are steps that wait for a named person's yes, written as an agency's workflows. Nothing runs on a timer, the AI never says yes for a person, and each person sees only what the design allows.
 
-Status: built and mounted per agency in `mwanachama-wakala-api`. The blueprint, the manager over `specstore`, the declared route table (50 routes, each also a tool) and the default workflows are in place; what remains is on [documentation/3. implementation/todo.md](documentation/3.%20implementation/todo.md).
+Status: built and mounted per agency in `mwanachama-wakala-api`. The blueprint, the manager over `specstore`, the declared route table (51 routes, each also a tool) and the default workflows are in place; what remains is on [documentation/3. implementation/todo.md](documentation/3.%20implementation/todo.md).
 
 ## Verify
 

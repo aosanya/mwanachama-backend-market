@@ -1208,6 +1208,33 @@
         }
       ]
     },
+    "reopen_group_order": {
+      "method": "POST",
+      "path": "/group-orders/{groupOrderID}/reopen",
+      "call": "ReopenGroupOrder",
+      "action": "market.group_order.reopen",
+      "tool": "market_reopen",
+      "title": "Take a revised group order back to open",
+      "description": "The step's named actor, the coordinator by default, takes a group order that is revising back to open so it can be sent; a group order in any other state answers 409.",
+      "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "path",
+          "as": "groupOrderID",
+          "refers": "market.group_order",
+          "description": "The group order."
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ]
+    },
     "call_off_group_order": {
       "method": "POST",
       "path": "/group-orders/{groupOrderID}/call-off",

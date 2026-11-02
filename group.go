@@ -134,6 +134,24 @@ func (m *marketManager) DecideSilentLine(ctx context.Context, caller, id, lineID
 	return l, m.note(ctx, id, caller, what)
 }
 
+func (m *marketManager) ReopenGroupOrder(ctx context.Context, caller, id string) (GroupOrder, error) {
+	var g GroupOrder
+	if err := m.get(ctx, RoleGroupOrder, id, &g); err != nil {
+		return g, err
+	}
+	if _, _, err := m.gate(ctx, WorkflowGroupOrder, g.WorkflowVersion, StepReopened, caller, parties{posterID: g.PosterID, coordinator: g.Coordinator}); err != nil {
+		return g, err
+	}
+	if g.State != models.GroupRevising {
+		return g, ErrConflict
+	}
+	g.State = models.GroupOpen
+	if err := m.update(ctx, RoleGroupOrder, id, g); err != nil {
+		return g, err
+	}
+	return g, m.note(ctx, id, caller, "took the revised order back to open")
+}
+
 func (m *marketManager) CallOffGroupOrder(ctx context.Context, caller, id string) (GroupOrder, error) {
 	var g GroupOrder
 	if err := m.get(ctx, RoleGroupOrder, id, &g); err != nil {

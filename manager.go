@@ -96,6 +96,7 @@ type MarketManager interface {
 	SendGroupOrder(ctx context.Context, caller, id string) (GroupOrder, error)
 	MarkLinePaid(ctx context.Context, caller, id, lineID string) (Line, error)
 	DecideSilentLine(ctx context.Context, caller, id, lineID, decision string) (Line, error)
+	ReopenGroupOrder(ctx context.Context, caller, id string) (GroupOrder, error)
 	CallOffGroupOrder(ctx context.Context, caller, id string) (GroupOrder, error)
 	PromiseGroupOrder(ctx context.Context, caller, id, date, note string) (GroupOrder, error)
 	ListGroupOrdersBy(ctx context.Context, caller string, limit int, after string, mine bool, state string) ([]GroupOrderView, error)
