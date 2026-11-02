@@ -71,8 +71,9 @@ func (m *marketManager) SendGroupOrder(ctx context.Context, caller, id string) (
 	if g.State != models.GroupOpen {
 		return g, ErrConflict
 	}
+	was := g
 	g.State = models.GroupSent
-	if err := m.update(ctx, RoleGroupOrder, id, g); err != nil {
+	if err := m.updateGroupFrom(ctx, was, g); err != nil {
 		return g, err
 	}
 	return g, m.note(ctx, id, caller, "sent")
@@ -145,8 +146,9 @@ func (m *marketManager) ReopenGroupOrder(ctx context.Context, caller, id string)
 	if g.State != models.GroupRevising {
 		return g, ErrConflict
 	}
+	was := g
 	g.State = models.GroupOpen
-	if err := m.update(ctx, RoleGroupOrder, id, g); err != nil {
+	if err := m.updateGroupFrom(ctx, was, g); err != nil {
 		return g, err
 	}
 	return g, m.note(ctx, id, caller, "took the revised order back to open")
@@ -163,8 +165,9 @@ func (m *marketManager) CallOffGroupOrder(ctx context.Context, caller, id string
 	if g.State == models.GroupClosed || g.State == models.GroupCancelled {
 		return g, ErrConflict
 	}
+	was := g
 	g.State = models.GroupCancelled
-	if err := m.update(ctx, RoleGroupOrder, id, g); err != nil {
+	if err := m.updateGroupFrom(ctx, was, g); err != nil {
 		return g, err
 	}
 	return g, m.note(ctx, id, caller, "called off")
@@ -181,8 +184,9 @@ func (m *marketManager) PromiseGroupOrder(ctx context.Context, caller, id, date,
 	if date == "" {
 		return g, fmt.Errorf("%w: a promise carries a date", ErrInvalid)
 	}
+	was := g
 	g.PromisedDate, g.Note = date, note
-	if err := m.update(ctx, RoleGroupOrder, id, g); err != nil {
+	if err := m.updateGroupFrom(ctx, was, g); err != nil {
 		return g, err
 	}
 	return g, m.note(ctx, id, caller, "promised "+date)
@@ -235,13 +239,14 @@ func (m *marketManager) AskRevision(ctx context.Context, caller, id string, pric
 	if minimum <= 0 {
 		return g, fmt.Errorf("%w: a group order needs a minimum", ErrInvalid)
 	}
+	was := g
 	var history []terms
 	_ = json.Unmarshal([]byte(g.TermsHistory), &history)
 	history = append(history, terms{g.TermsVersion, g.Price, g.Minimum})
 	raw, _ := json.Marshal(history)
 	g.TermsHistory, g.TermsVersion = string(raw), g.TermsVersion+1
 	g.Price, g.Minimum, g.State = price, minimum, models.GroupRevising
-	if err := m.update(ctx, RoleGroupOrder, id, g); err != nil {
+	if err := m.updateGroupFrom(ctx, was, g); err != nil {
 		return g, err
 	}
 	if err := m.q(ctx, RoleLine).Where("group_order_id = ?", id).Update("answer", models.AnswerWaiting).Error; err != nil {

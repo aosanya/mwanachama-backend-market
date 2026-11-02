@@ -162,6 +162,21 @@ func (m *marketManager) update(ctx context.Context, role, id string, v any) erro
 	return m.q(ctx, role).Where("id = ?", id).Updates(row).Error
 }
 
+func (m *marketManager) updateGroupFrom(ctx context.Context, was, g GroupOrder) error {
+	row, err := encode(m.st.Object(RoleGroupOrder), g)
+	if err != nil {
+		return err
+	}
+	res := m.q(ctx, RoleGroupOrder).Where("id = ? AND state = ? AND terms_version = ?", g.ID, was.State, was.TermsVersion).Updates(row)
+	if res.Error != nil {
+		return res.Error
+	}
+	if res.RowsAffected == 0 {
+		return ErrConflict
+	}
+	return nil
+}
+
 func (m *marketManager) get(ctx context.Context, role, id string, out any) error {
 	var rows []map[string]any
 	if err := m.q(ctx, role).Where("id = ?", id).Limit(1).Find(&rows).Error; err != nil {
