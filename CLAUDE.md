@@ -17,7 +17,7 @@ The tables come from a JSON blueprint, not from Go row structs, through `mwanach
 - A rule is a step that waits for a named person's yes. Nothing runs on a timer.
 - The AI never says yes for a person.
 - An order keeps the terms it started with, and the version of the workflow it started with.
-- A supplier sees a group order's names and amounts and never a contact; a person sees her own line, the total, the minimum and the count, never another person's name or amount; a supplier's private stock list is his alone.
+- A shop sees a group order's names and amounts and never a contact; a person sees her own line, the total, the minimum and the count, never another person's name or amount; a shop's private stock list is its own.
 
 ## Documentation
 

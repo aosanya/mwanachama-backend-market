@@ -6,7 +6,7 @@ A market puts the people who post a price in touch with the people who pick one,
 
 | | Inputs | Harvest | Rides |
 |---|---|---|---|
-| Poster | A supplier | A buyer | A rider |
+| Poster | A shop | A buyer | A rider |
 | Picker | A farmer | A farmer | A customer |
 | Offer | The shop's price for a product, with bulk prices | The price a buyer pays | A fare |
 | Ask | "Can you fill 2 bags by Friday?" | "Will you take 40 bags?" | "Can you take me from the market to Ndori?" |
