@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 
+	"gorm.io/gorm"
+
 	"github.com/aosanya/mwanachama-backend-market/models"
 )
 
@@ -29,16 +31,41 @@ func (m *marketManager) named(ctx context.Context, p Poster) Poster {
 	return p
 }
 
-func (m *marketManager) ListPosters(ctx context.Context, status string) ([]Poster, error) {
+func (m *marketManager) postersWithStatus(ctx context.Context, status string) *gorm.DB {
 	q := m.q(ctx, RolePoster)
 	if status != "" {
 		q = q.Where("status = ?", status)
 	}
+	return q
+}
+
+func (m *marketManager) postersOf(ctx context.Context, q *gorm.DB) ([]Poster, error) {
 	ps, err := listOf[Poster](m, q, RolePoster)
 	for i := range ps {
 		ps[i] = m.named(ctx, ps[i])
 	}
 	return ps, err
+}
+
+func (m *marketManager) decidesPosters(ctx context.Context, caller string) bool {
+	_, _, err := m.gate(ctx, WorkflowApprovePoster, 0, StepApproved, caller, parties{})
+	return err == nil
+}
+
+func (m *marketManager) ListPosters(ctx context.Context, status string) ([]Poster, error) {
+	return m.postersOf(ctx, m.postersWithStatus(ctx, status))
+}
+
+func (m *marketManager) ListPostersFor(ctx context.Context, caller, status string) ([]Poster, error) {
+	q := m.postersWithStatus(ctx, status)
+	switch {
+	case m.decidesPosters(ctx, caller):
+	case caller == "":
+		q = q.Where("status = ?", models.PosterApproved)
+	default:
+		q = q.Where("(status = ? OR owner = ?)", models.PosterApproved, caller)
+	}
+	return m.postersOf(ctx, q)
 }
 
 func (m *marketManager) setStatus(ctx context.Context, caller, id, status string) (Poster, error) {

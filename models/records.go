@@ -61,13 +61,14 @@ type Ask struct {
 }
 
 type Notice struct {
-	ID        string  `json:"id"`
-	Picker    string  `json:"picker"`
-	Wanted    string  `json:"wanted"`
-	Quantity  float64 `json:"quantity,omitempty"`
-	NeededBy  string  `json:"needed_by,omitempty"`
-	State     string  `json:"state"`
-	CreatedAt string  `json:"created_at"`
+	ID         string  `json:"id"`
+	Picker     string  `json:"picker,omitempty"`
+	Wanted     string  `json:"wanted"`
+	Quantity   float64 `json:"quantity,omitempty"`
+	NeededBy   string  `json:"needed_by,omitempty"`
+	State      string  `json:"state"`
+	PickerName string  `json:"picker_name,omitempty" spec:"-"`
+	CreatedAt  string  `json:"created_at"`
 }
 
 type Quote struct {

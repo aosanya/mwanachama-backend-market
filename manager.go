@@ -43,6 +43,7 @@ type MarketManager interface {
 
 	ApplyPoster(ctx context.Context, caller string, p Poster) (Poster, error)
 	ListPosters(ctx context.Context, status string) ([]Poster, error)
+	ListPostersFor(ctx context.Context, caller, status string) ([]Poster, error)
 	ApprovePoster(ctx context.Context, caller, id string) (Poster, error)
 	DeclinePoster(ctx context.Context, caller, id string) (Poster, error)
 	RemovePoster(ctx context.Context, caller, id string) (Poster, error)
@@ -70,6 +71,7 @@ type MarketManager interface {
 	CreateNotice(ctx context.Context, caller string, n Notice) (Notice, error)
 	WithdrawNotice(ctx context.Context, caller, id string) (Notice, error)
 	ListNotices(ctx context.Context) ([]Notice, error)
+	ListNoticesFor(ctx context.Context, caller string) ([]Notice, error)
 
 	SendQuote(ctx context.Context, caller, noticeID string, q Quote) (Quote, error)
 	ListQuotes(ctx context.Context, caller, noticeID string) ([]Quote, error)

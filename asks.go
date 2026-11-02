@@ -3,6 +3,7 @@ package market
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"gorm.io/gorm"
 
@@ -255,4 +256,27 @@ func (m *marketManager) WithdrawNotice(ctx context.Context, caller, id string) (
 
 func (m *marketManager) ListNotices(ctx context.Context) ([]Notice, error) {
 	return listOf[Notice](m, m.q(ctx, RoleNotice).Where("state = ?", models.NoticeOpen), RoleNotice)
+}
+
+func (m *marketManager) ListNoticesFor(ctx context.Context, caller string) ([]Notice, error) {
+	notices, err := m.ListNotices(ctx)
+	if err != nil {
+		return nil, err
+	}
+	for i := range notices {
+		name := m.nameOf(ctx, notices[i].Picker)
+		if caller != "" && notices[i].Picker == caller {
+			notices[i].PickerName = name
+			continue
+		}
+		notices[i].Picker, notices[i].PickerName = "", firstWord(name)
+	}
+	return notices, nil
+}
+
+func firstWord(name string) string {
+	if words := strings.Fields(name); len(words) > 0 {
+		return words[0]
+	}
+	return ""
 }

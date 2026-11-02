@@ -29,12 +29,17 @@
     "list_posters": {
       "method": "GET",
       "path": "/posters",
-      "call": "ListPosters",
+      "call": "ListPostersFor",
       "action": "market.poster.list",
       "tool": "market_list_posters",
       "title": "List posters",
-      "description": "List posters, optionally by status. Each carries owner_name and approved_by_name when the host supplies names.",
+      "description": "List posters, optionally by status. The caller sees the approved posters and their own in any state; the person who decides sees every poster. Each carries owner_name and approved_by_name when the host supplies names.",
       "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
         {
           "from": "query",
           "as": "status",
@@ -611,12 +616,18 @@
     "list_notices": {
       "method": "GET",
       "path": "/notices",
-      "call": "ListNotices",
+      "call": "ListNoticesFor",
       "action": "market.notice.list",
       "tool": "market_list_notices",
       "title": "List notices",
-      "description": "Open notices.",
-      "args": [],
+      "description": "Open notices. A notice carries its picker's id and full name only for the picker; for everyone else it carries the picker's first name when the host supplies names, and no id.",
+      "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        }
+      ],
       "returns": [
         {
           "body": true
