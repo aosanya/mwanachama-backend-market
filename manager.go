@@ -162,8 +162,21 @@ func (m *marketManager) update(ctx context.Context, role, id string, v any) erro
 	return m.q(ctx, role).Where("id = ?", id).Updates(row).Error
 }
 
-func (m *marketManager) updateGroupFrom(ctx context.Context, was, g GroupOrder) error {
-	row, err := encode(m.st.Object(RoleGroupOrder), g)
+func (m *marketManager) stampEnd(was GroupOrder, g *GroupOrder) {
+	if g.State == was.State {
+		return
+	}
+	switch g.State {
+	case models.GroupClosed:
+		g.ClosedAt = m.now()
+	case models.GroupCancelled:
+		g.CancelledAt = m.now()
+	}
+}
+
+func (m *marketManager) updateGroupFrom(ctx context.Context, was GroupOrder, g *GroupOrder) error {
+	m.stampEnd(was, g)
+	row, err := encode(m.st.Object(RoleGroupOrder), *g)
 	if err != nil {
 		return err
 	}

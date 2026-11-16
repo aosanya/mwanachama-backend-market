@@ -50,6 +50,8 @@ var serverOwned = map[string]bool{
 	"GroupOrder.terms_history":    true,
 	"GroupOrder.workflow_version": true,
 	"GroupOrder.state":            true,
+	"GroupOrder.closed_at":        true,
+	"GroupOrder.cancelled_at":     true,
 }
 
 var namedOnlyWhenSeveral = map[string]bool{

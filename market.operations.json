@@ -910,7 +910,7 @@
       "action": "market.group_order.list",
       "tool": "market_list_group_orders",
       "title": "List group orders",
-      "description": "Each shown as the caller may see it, in pages ordered by id: the first 50 by default. To see more, pass the id of the last group order of the page as after. Pass mine as true for only the group orders the caller has a line in, started or owns the poster of, and state for only those open, revising, sent, closed or cancelled; both are applied before the page is cut.",
+      "description": "Each shown as the caller may see it, in pages ordered by id: the first 50 by default. To see more, pass the id of the last group order of the page as after. Pass mine as true for only the group orders the caller has a line in, started or owns the poster of, and state for only those open, revising, sent, closed or cancelled; both are applied before the page is cut. A closed group order carries closed_at and a called-off one cancelled_at, so finished ones can be ordered by when they ended.",
       "args": [
         {
           "from": "caller",
@@ -978,7 +978,7 @@
       "action": "market.group_order.read",
       "tool": "market_get_group_order",
       "title": "Read a group order",
-      "description": "The coordinator and poster see all lines, a picker her own line and the total, minimum and count.",
+      "description": "The coordinator and poster see all lines, a picker her own line and the total, minimum and count. A closed group order carries closed_at and a called-off one cancelled_at.",
       "args": [
         {
           "from": "caller",
@@ -1242,7 +1242,7 @@
       "action": "market.group_order.call_off",
       "tool": "market_call_off",
       "title": "Call a group order off",
-      "description": "The step's named actor, the coordinator by default, calls a group order off at any step before it is closed.",
+      "description": "The step's named actor, the coordinator by default, calls a group order off at any step before it is closed. The group order then carries cancelled_at, the moment it was called off.",
       "args": [
         {
           "from": "caller",

@@ -629,6 +629,16 @@
           "name": "created_at",
           "type": "timestamp",
           "description": "When the row was created."
+        },
+        {
+          "name": "closed_at",
+          "type": "timestamp",
+          "description": "When the group order closed; empty until it does."
+        },
+        {
+          "name": "cancelled_at",
+          "type": "timestamp",
+          "description": "When the group order was called off; empty until it is."
         }
       ],
       "indexes": [
