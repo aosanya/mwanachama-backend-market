@@ -8,18 +8,18 @@
 scripts/hub-copy-diff.sh [path-to-hub-modules-market]
 ```
 
-The default path is `../projects/hub-steward/code/wakala-api/modules/market`, relative to this repository's parent folder. The exit code is 1 when the trees differ, 0 when they do not. The script and `scripts/hubdiff` are the ones of `mwanachama-backend-git` (G78), with the module path changed.
+The default path is `../projects/hub-steward/code/wakala-api/modules/market`, relative to this repository's parent folder. The exit code is 0 when no file differs and nothing exists only in the hub; `Only in backend` lines may remain and do not count. It is 1 when any `diff` line or any `Only in hub` line appears, and 1 for any other line `diff -r` prints, such as a file that is a directory on one side. The full diff is printed either way. The script and `scripts/hubdiff` are the ones of `mwanachama-backend-git` (G78), with the module path changed.
 
 ## What it does
 
 1. Copies the `*.go` and `*.json` files of this repository and of the hub folder into two temporary folders, leaving out `cmd/`, `documentation/`, `scripts/` and `.git/`.
 2. Rewrites the hub's imports: `wakalaserver/modules/shared/` becomes `github.com/aosanya/mwanachama-backend-shared/` and `wakalaserver/modules/market` becomes `github.com/aosanya/mwanachama-backend-market`.
 3. Runs every Go file on both sides through `scripts/hubdiff`, which parses it, drops all comments and prints it with `gofmt`, so comments and layout do not show as differences.
-4. Runs `diff -r backend hub`.
+4. Runs `diff -r backend hub` and prints its output. `diff -r` returns 1 for every `Only in backend` line, and this repository always holds test files and `spec/examples` that the hub copy lacks, so the script reads the output instead of the status: it exits 1 only when a line does not start with `Only in backend`.
 
 ## Result of 2026-11-16
 
-No file differs and nothing exists only in the hub. What remains is `Only in backend` lines: the test files written here (the hub copy carried only seven test files, all of which now exist here and are identical) and `spec/examples` (the two example blueprints used by `examples_test.go`).
+No file differs and nothing exists only in the hub, so the script exits 0. What remains is `Only in backend` lines: the test files written here (the hub copy carried only seven test files, all of which now exist here and are identical) and `spec/examples` (the two example blueprints used by `examples_test.go`).
 
 ## The hub commits carried over
 
