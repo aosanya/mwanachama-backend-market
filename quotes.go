@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/aosanya/mwanachama-backend-market/models"
+	"github.com/aosanya/mwanachama-backend-shared/gormutil"
 )
 
 func (m *marketManager) openNotice(ctx context.Context, id string) (Notice, error) {
@@ -45,13 +46,6 @@ func (m *marketManager) SendQuote(ctx context.Context, caller, noticeID string, 
 	if p.Availability == models.Away {
 		return q, ErrPosterAway
 	}
-	standing, err := m.count(ctx, RoleQuote, "notice_id = ? AND poster_id = ?", noticeID, p.ID)
-	if err != nil {
-		return q, err
-	}
-	if standing > 0 {
-		return q, ErrConflict
-	}
 	q.ID, q.NoticeID, q.Picker, q.CounterPrice = newID(), noticeID, n.Picker, 0
 	q.State, q.CreatedAt = models.QuoteOpen, m.now()
 	if q.Price <= 0 {
@@ -60,7 +54,13 @@ func (m *marketManager) SendQuote(ctx context.Context, caller, noticeID string, 
 	if err := m.checks(RoleQuote, q); err != nil {
 		return q, err
 	}
-	return q, m.insert(ctx, RoleQuote, q)
+	if err := m.insert(ctx, RoleQuote, q); err != nil {
+		if gormutil.IsUniqueViolation(err) {
+			return q, ErrConflict
+		}
+		return q, err
+	}
+	return q, nil
 }
 
 func (m *marketManager) ListQuotes(ctx context.Context, caller, noticeID string) ([]Quote, error) {

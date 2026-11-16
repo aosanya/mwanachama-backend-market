@@ -868,6 +868,15 @@
           "fields": [
             "notice_id"
           ]
+        },
+        {
+          "name": "notice_poster",
+          "description": "Holds one quote per poster on a notice, so sends arriving at once cannot store several.",
+          "fields": [
+            "notice_id",
+            "poster_id"
+          ],
+          "unique": true
         }
       ]
     },
