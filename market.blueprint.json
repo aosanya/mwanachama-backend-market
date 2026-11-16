@@ -520,6 +520,16 @@
           "name": "created_at",
           "type": "timestamp",
           "description": "When the row was created."
+        },
+        {
+          "name": "delivered_at",
+          "type": "timestamp",
+          "description": "When the order was delivered, empty until it is."
+        },
+        {
+          "name": "cancelled_at",
+          "type": "timestamp",
+          "description": "When the order was cancelled, empty until it is."
         }
       ],
       "indexes": [

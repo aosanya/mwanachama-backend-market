@@ -83,7 +83,7 @@ type MarketManager interface {
 	CancelOrder(ctx context.Context, caller, id string) (Order, error)
 	MarkPaid(ctx context.Context, caller, id string) (Order, error)
 	GetOrder(ctx context.Context, caller, id string) (Order, error)
-	ListOrders(ctx context.Context, caller string) ([]Order, error)
+	ListOrders(ctx context.Context, caller string, limit int, after, state string) ([]Order, error)
 	OrderTrail(ctx context.Context, caller, orderID string) ([]Trail, error)
 
 	SetStock(ctx context.Context, caller string, s Stock) (Stock, error)

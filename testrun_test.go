@@ -120,11 +120,11 @@ func TestTwoRunsKeepTheirOrdersApart(t *testing.T) {
 	buyBeans(t, c, second)
 	buyBeans(t, c, second)
 
-	firstOrders, err := first.ListOrders(c.ctx, "bea")
+	firstOrders, err := first.ListOrders(c.ctx, "bea", 0, "", "")
 	if err != nil {
 		t.Fatal(err)
 	}
-	secondOrders, err := second.ListOrders(c.ctx, "bea")
+	secondOrders, err := second.ListOrders(c.ctx, "bea", 0, "", "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -163,7 +163,7 @@ func TestRemovingARunRemovesItsRowsAndKeepsTheOthers(t *testing.T) {
 	if rows, _ := specstore.RowsOfRun(c.ctx, c.db, c.spec, "run-1"); len(rows) != 0 {
 		t.Fatalf("run-1 still holds %+v", rows)
 	}
-	if orders, _ := second.ListOrders(c.ctx, "bea"); len(orders) != 1 {
+	if orders, _ := second.ListOrders(c.ctx, "bea", 0, "", ""); len(orders) != 1 {
 		t.Fatalf("run-2 lost its order: %d", len(orders))
 	}
 }

@@ -8,6 +8,11 @@ import (
 	"github.com/aosanya/mwanachama-backend-market/models"
 )
 
+const (
+	defaultOrderPage = 50
+	largestOrderPage = 200
+)
+
 func unitPrice(o Offer, quantity float64) float64 {
 	if o.BulkPrice > 0 && o.BulkMin > 0 && quantity >= o.BulkMin {
 		return o.BulkPrice
@@ -75,8 +80,8 @@ func (m *marketManager) visibleOrder(ctx context.Context, caller, id string) (Or
 	return o, false, ErrNotFound
 }
 
-func (m *marketManager) setWhilePlaced(ctx context.Context, id, column string, value any) error {
-	res := m.q(ctx, RoleOrder).Where("id = ? AND state = ?", id, models.OrderPlaced).Update(column, value)
+func (m *marketManager) setWhilePlaced(ctx context.Context, id string, columns map[string]any) error {
+	res := m.q(ctx, RoleOrder).Where("id = ? AND state = ?", id, models.OrderPlaced).Updates(columns)
 	if res.Error != nil {
 		return res.Error
 	}
@@ -98,10 +103,12 @@ func (m *marketManager) CancelOrder(ctx context.Context, caller, id string) (Ord
 	if o.State != models.OrderPlaced {
 		return o, ErrConflict
 	}
-	if err := m.setWhilePlaced(ctx, id, "state", models.OrderCancelled); err != nil {
+	cancelledAt := m.now()
+	if err := m.setWhilePlaced(ctx, id, map[string]any{"state": models.OrderCancelled, "cancelled_at": cancelledAt}); err != nil {
 		return o, err
 	}
 	o.State = models.OrderCancelled
+	o.CancelledAt = cancelledAt
 	if step.ClosesYes {
 		if err := m.closeYeses(ctx, o); err != nil {
 			return o, err
@@ -124,7 +131,7 @@ func (m *marketManager) MarkPaid(ctx context.Context, caller, id string) (Order,
 	if o.State != models.OrderPlaced {
 		return o, ErrConflict
 	}
-	if err := m.setWhilePlaced(ctx, id, "paid", true); err != nil {
+	if err := m.setWhilePlaced(ctx, id, map[string]any{"paid": true}); err != nil {
 		return o, err
 	}
 	o.Paid = true
@@ -137,21 +144,44 @@ func (m *marketManager) GetOrder(ctx context.Context, caller, id string) (Order,
 	return o, err
 }
 
-func (m *marketManager) ListOrders(ctx context.Context, caller string) ([]Order, error) {
-	owned, err := m.ownedPosters(ctx, caller)
+func knownOrderState(state string) bool {
+	switch state {
+	case models.OrderPlaced, models.OrderDelivered, models.OrderCancelled:
+		return true
+	}
+	return false
+}
+
+func (m *marketManager) ListOrders(ctx context.Context, caller string, limit int, after, state string) ([]Order, error) {
+	if limit < 0 {
+		return nil, fmt.Errorf("%w: a page is not negative", ErrInvalid)
+	}
+	if state != "" && !knownOrderState(state) {
+		return nil, fmt.Errorf("%w: %q is not an order state", ErrInvalid, state)
+	}
+	if limit == 0 {
+		limit = defaultOrderPage
+	}
+	if limit > largestOrderPage {
+		limit = largestOrderPage
+	}
+	if caller == "" {
+		return []Order{}, nil
+	}
+	q := m.q(ctx, RoleOrder).Order("id").Limit(limit).
+		Where("(picker = ? OR poster_id IN (?))", caller, m.q(ctx, RolePoster).Select("id").Where("owner = ?", caller))
+	if after != "" {
+		q = q.Where("id > ?", after)
+	}
+	if state != "" {
+		q = q.Where("state = ?", state)
+	}
+	out, err := listOf[Order](m, q, RoleOrder)
 	if err != nil {
 		return nil, err
 	}
-	all, err := listOf[Order](m, m.q(ctx, RoleOrder), RoleOrder)
-	if err != nil {
-		return nil, err
-	}
-	var out []Order
-	for _, o := range all {
-		if (o.Picker == caller && caller != "") || owned[o.PosterID] {
-			o.PickerName = m.nameOf(ctx, o.Picker)
-			out = append(out, o)
-		}
+	for i := range out {
+		out[i].PickerName = m.nameOf(ctx, out[i].Picker)
 	}
 	return out, nil
 }

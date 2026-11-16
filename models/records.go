@@ -126,6 +126,8 @@ type Order struct {
 	PromisedDate    string  `json:"promised_date,omitempty"`
 	PickerName      string  `json:"picker_name,omitempty" spec:"-"`
 	CreatedAt       string  `json:"created_at"`
+	DeliveredAt     string  `json:"delivered_at,omitempty"`
+	CancelledAt     string  `json:"cancelled_at,omitempty"`
 }
 
 type GroupOrder struct {

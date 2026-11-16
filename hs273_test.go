@@ -59,7 +59,7 @@ func TestTwoMarketsInOneAgencyAreSeparate(t *testing.T) {
 
 	posters, _ := harvest.ListPosters(ctx, "")
 	offers, _ := harvest.ListOffers(ctx, "")
-	orders, _ := harvest.ListOrders(ctx, "bea")
+	orders, _ := harvest.ListOrders(ctx, "bea", 0, "", "")
 	groups, _ := harvest.ListGroupOrdersBy(ctx, "coordinator", 0, "", false, "")
 	if len(posters) != 0 || len(offers) != 0 || len(orders) != 0 || len(groups) != 0 {
 		t.Fatalf("Harvest sees Inputs' posters %d, offers %d, orders %d, group orders %d", len(posters), len(offers), len(orders), len(groups))
@@ -98,7 +98,7 @@ func TestTwoMarketsInOneAgencyAreSeparate(t *testing.T) {
 	if order.WorkflowVersion != inputsBuyNowVersion || harvestOrder.WorkflowVersion != 1 {
 		t.Fatalf("workflow versions: Inputs %d, Harvest %d, want %d and 1", order.WorkflowVersion, harvestOrder.WorkflowVersion, inputsBuyNowVersion)
 	}
-	if got, _ := inputs.ListOrders(ctx, "bea"); len(got) != 1 || got[0].ID != order.ID {
+	if got, _ := inputs.ListOrders(ctx, "bea", 0, "", ""); len(got) != 1 || got[0].ID != order.ID {
 		t.Fatalf("Inputs' orders after Harvest took one: %+v", got)
 	}
 }

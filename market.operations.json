@@ -762,12 +762,27 @@
       "action": "market.order.list",
       "tool": "market_list_orders",
       "title": "List orders",
-      "description": "The caller's own orders.",
+      "description": "The caller's own orders, as picker or as owner of the poster, in pages ordered by id: the first 50 by default. To see more, pass the id of the last order of the page as after. Pass state for only the placed, delivered or cancelled ones; it is applied before the page is cut. A delivered order carries delivered_at and a cancelled one cancelled_at.",
       "args": [
         {
           "from": "caller",
           "as": "caller",
           "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "query",
+          "as": "limit",
+          "description": "Orders in the page. Absent or zero means 50; the most is 200."
+        },
+        {
+          "from": "query",
+          "as": "after",
+          "description": "The id of the last order already shown. Only later ones are returned."
+        },
+        {
+          "from": "query",
+          "as": "state",
+          "description": "Only orders in this state: placed, delivered or cancelled."
         }
       ],
       "returns": [

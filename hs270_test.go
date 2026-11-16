@@ -26,7 +26,7 @@ func TestAnOrderMadeFromAYesKeepsTheYesAndItsPromisedDate(t *testing.T) {
 		t.Fatalf("order %+v err %v", ord, err)
 	}
 	got, _ := m.GetOrder(ctx, "bea", ord.ID)
-	list, _ := m.ListOrders(ctx, "ann")
+	list, _ := m.ListOrders(ctx, "ann", 0, "", "")
 	if got.YesID != ys[0].ID || got.PromisedDate != "2026-11-01" || len(list) != 1 || list[0].PromisedDate != "2026-11-01" {
 		t.Fatalf("get %+v list %+v", got, list)
 	}
@@ -50,14 +50,14 @@ func TestReadsCarryThePickersNameWhenTheHostSuppliesOne(t *testing.T) {
 	m.JoinGroupOrder(ctx, "bea", g.ID, 4)
 
 	asks, _ := m.ListAsksBy(ctx, "ann", "", "")
-	orders, _ := m.ListOrders(ctx, "ann")
+	orders, _ := m.ListOrders(ctx, "ann", 0, "", "")
 	view, _ := m.GetGroupOrder(ctx, "coord", g.ID)
 	if asks[0].PickerName != "" || orders[0].PickerName != "" || view.Lines[0].PickerName != "" {
 		t.Fatal("no names were supplied")
 	}
 	m.UseNames(upperNames)
 	asks, _ = m.ListAsksBy(ctx, "ann", "", "")
-	orders, _ = m.ListOrders(ctx, "ann")
+	orders, _ = m.ListOrders(ctx, "ann", 0, "", "")
 	got, _ := m.GetOrder(ctx, "bea", ord.ID)
 	view, _ = m.GetGroupOrder(ctx, "coord", g.ID)
 	want := "Name of bea"

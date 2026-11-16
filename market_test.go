@@ -60,7 +60,7 @@ func TestAReplyNeverOpensAnOrderAndSilenceStaysWaiting(t *testing.T) {
 	if _, err := m.AnswerAsk(ctx, "ann", a.ID, models.AnswerYes, "2026-11-01", ""); err != nil {
 		t.Fatal(err)
 	}
-	if orders, _ := m.ListOrders(ctx, "bea"); len(orders) != 0 {
+	if orders, _ := m.ListOrders(ctx, "bea", 0, "", ""); len(orders) != 0 {
 		t.Fatal("a reply opened an order")
 	}
 	if ys, _ := m.ListYesesBy(ctx, "bea", "", ""); len(ys) != 1 {
