@@ -26,4 +26,10 @@ find "$work/hub" -name '*.go' -print0 | xargs -0 perl -pi -e '
 (cd "$repo" && go run ./scripts/hubdiff "$work/hub")
 
 cd "$work"
-diff -r backend hub | sed "s#^diff -r backend/#diff #"
+report="$(diff -r backend hub | sed "s#^diff -r backend/#diff #" || true)"
+if [ -n "$report" ]; then
+  printf '%s\n' "$report"
+fi
+if printf '%s' "$report" | grep -qv '^Only in backend[:/]'; then
+  exit 1
+fi
