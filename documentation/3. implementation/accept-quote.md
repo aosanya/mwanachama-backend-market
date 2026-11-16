@@ -12,4 +12,10 @@ The claim, the decline of the notice's other quotes and the winner's accepted wr
 
 `accept_quote_atomic_test.go` fails the decline, then the winner's accepted write, with a gorm update callback and asserts the notice is open and every quote open; a third test flips the winning quote to countered between the read and the claim and asserts `ErrConflict` with the notice still open.
 
-The hub copy of the module (`projects/hub-steward/code/wakala-api/modules/market/quotes.go`) needs the same change until ISS-105 deletes it (hub issues MUN330 and M7).
+## Withdrawing a notice
+
+`WithdrawNotice` runs `UPDATE notice SET state = withdrawn WHERE id = ? AND state = open` through `moveOpenNotice`, the same statement shape as the claim, and requires one row affected. A sold or already withdrawn notice answers `ErrConflict` and stays as it was, so a sold notice cannot be withdrawn and an accept and a withdraw at once leave one winner. A caller who is not the notice's picker still answers `ErrNotFound`.
+
+`withdraw_notice_test.go` withdraws a sold notice, withdraws a notice twice, and runs an accept and a withdraw at once through two managers for ten rounds, asserting one success and a notice state that matches the winner.
+
+The hub copy of the module (`projects/hub-steward/code/wakala-api/modules/market/quotes.go`) needs the same change until ISS-105 deletes it (hub issues MUN330, M7 and M8).

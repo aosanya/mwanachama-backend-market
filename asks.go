@@ -242,8 +242,11 @@ func (m *marketManager) WithdrawNotice(ctx context.Context, caller, id string) (
 	if n.Picker != caller {
 		return n, ErrNotFound
 	}
+	if err := m.moveOpenNotice(ctx, id, models.NoticeWithdrawn); err != nil {
+		return n, err
+	}
 	n.State = models.NoticeWithdrawn
-	return n, m.update(ctx, RoleNotice, id, n)
+	return n, nil
 }
 
 func (m *marketManager) ListNotices(ctx context.Context) ([]Notice, error) {

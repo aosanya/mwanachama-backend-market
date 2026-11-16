@@ -203,7 +203,11 @@ func (m *marketManager) AcceptQuote(ctx context.Context, caller, quoteID string)
 }
 
 func (m *marketManager) claimNotice(ctx context.Context, id string) error {
-	res := m.q(ctx, RoleNotice).Where("id = ? AND state = ?", id, models.NoticeOpen).Update("state", models.NoticeSold)
+	return m.moveOpenNotice(ctx, id, models.NoticeSold)
+}
+
+func (m *marketManager) moveOpenNotice(ctx context.Context, id, state string) error {
+	res := m.q(ctx, RoleNotice).Where("id = ? AND state = ?", id, models.NoticeOpen).Update("state", state)
 	if res.Error != nil {
 		return res.Error
 	}
