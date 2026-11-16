@@ -706,6 +706,15 @@
           "fields": [
             "group_order_id"
           ]
+        },
+        {
+          "name": "group_picker",
+          "description": "Holds one line per picker in a group order, so joins arriving at once cannot store several.",
+          "fields": [
+            "group_order_id",
+            "picker"
+          ],
+          "unique": true
         }
       ]
     },

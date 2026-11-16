@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm/clause"
 
 	"github.com/aosanya/mwanachama-backend-market/models"
+	"github.com/aosanya/mwanachama-backend-shared/gormutil"
 )
 
 type terms struct {
@@ -222,10 +223,29 @@ func (m *marketManager) JoinGroupOrder(ctx context.Context, caller, id string, q
 	if err := m.checks(RoleLine, l); err != nil {
 		return l, err
 	}
-	if err := m.insert(ctx, RoleLine, l); err != nil {
+	return m.settleJoin(ctx, id, l)
+}
+
+func (m *marketManager) settleJoin(ctx context.Context, groupID string, l Line) (Line, error) {
+	err := m.insert(ctx, RoleLine, l)
+	if err == nil {
+		return l, m.note(ctx, groupID, l.Picker, "joined")
+	}
+	if !gormutil.IsUniqueViolation(err) {
 		return l, err
 	}
-	return l, m.note(ctx, id, caller, "joined")
+	existing, err := m.myLine(ctx, groupID, l.Picker)
+	if err != nil {
+		return l, err
+	}
+	if existing == nil {
+		return l, ErrConflict
+	}
+	existing.Quantity = l.Quantity
+	if err := m.update(ctx, RoleLine, existing.ID, *existing); err != nil {
+		return *existing, err
+	}
+	return *existing, m.note(ctx, groupID, l.Picker, "changed the quantity")
 }
 
 func (m *marketManager) AskRevision(ctx context.Context, caller, id string, price, minimum float64) (GroupOrder, error) {
