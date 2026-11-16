@@ -58,14 +58,21 @@ func (m *marketManager) ListPosters(ctx context.Context, status string) ([]Poste
 
 func (m *marketManager) ListPostersFor(ctx context.Context, caller, status string) ([]Poster, error) {
 	q := m.postersWithStatus(ctx, status)
+	decides := m.decidesPosters(ctx, caller)
 	switch {
-	case m.decidesPosters(ctx, caller):
+	case decides:
 	case caller == "":
 		q = q.Where("status = ?", models.PosterApproved)
 	default:
 		q = q.Where("(status = ? OR owner = ?)", models.PosterApproved, caller)
 	}
-	return m.postersOf(ctx, q)
+	posters, err := m.postersOf(ctx, q)
+	if !decides {
+		for i := range posters {
+			posters[i].ApprovedBy = ""
+		}
+	}
+	return posters, err
 }
 
 func (m *marketManager) setStatus(ctx context.Context, caller, id, status string) (Poster, error) {
