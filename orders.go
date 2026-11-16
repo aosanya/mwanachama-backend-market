@@ -75,6 +75,17 @@ func (m *marketManager) visibleOrder(ctx context.Context, caller, id string) (Or
 	return o, false, ErrNotFound
 }
 
+func (m *marketManager) setWhilePlaced(ctx context.Context, id, column string, value any) error {
+	res := m.q(ctx, RoleOrder).Where("id = ? AND state = ?", id, models.OrderPlaced).Update(column, value)
+	if res.Error != nil {
+		return res.Error
+	}
+	if res.RowsAffected == 0 {
+		return ErrConflict
+	}
+	return nil
+}
+
 func (m *marketManager) CancelOrder(ctx context.Context, caller, id string) (Order, error) {
 	o, _, err := m.visibleOrder(ctx, caller, id)
 	if err != nil {
@@ -87,10 +98,10 @@ func (m *marketManager) CancelOrder(ctx context.Context, caller, id string) (Ord
 	if o.State != models.OrderPlaced {
 		return o, ErrConflict
 	}
-	o.State = models.OrderCancelled
-	if err := m.update(ctx, RoleOrder, id, o); err != nil {
+	if err := m.setWhilePlaced(ctx, id, "state", models.OrderCancelled); err != nil {
 		return o, err
 	}
+	o.State = models.OrderCancelled
 	if step.ClosesYes {
 		if err := m.closeYeses(ctx, o); err != nil {
 			return o, err
@@ -110,10 +121,13 @@ func (m *marketManager) MarkPaid(ctx context.Context, caller, id string) (Order,
 	if _, _, err := m.gate(ctx, WorkflowBuyNow, o.WorkflowVersion, StepPaid, caller, parties{picker: o.Picker, posterID: o.PosterID}); err != nil {
 		return o, err
 	}
-	o.Paid = true
-	if err := m.update(ctx, RoleOrder, id, o); err != nil {
+	if o.State != models.OrderPlaced {
+		return o, ErrConflict
+	}
+	if err := m.setWhilePlaced(ctx, id, "paid", true); err != nil {
 		return o, err
 	}
+	o.Paid = true
 	return o, m.note(ctx, id, caller, "marked paid")
 }
 
