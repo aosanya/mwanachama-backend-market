@@ -184,15 +184,22 @@ func (m *marketManager) AcceptQuote(ctx context.Context, caller, quoteID string)
 	if q.State != models.QuoteOpen || n.State != models.NoticeOpen {
 		return q, ErrConflict
 	}
-	if err := m.claimNotice(ctx, n.ID); err != nil {
+	accepted := q
+	accepted.State = models.QuoteAccepted
+	err = m.inTransaction(ctx, func(tx *marketManager) error {
+		if err := tx.claimNotice(ctx, n.ID); err != nil {
+			return err
+		}
+		if err := tx.q(ctx, RoleQuote).Where("notice_id = ? AND id <> ?", n.ID, q.ID).
+			Update("state", models.QuoteDeclined).Error; err != nil {
+			return err
+		}
+		return tx.updateWhileIn(ctx, RoleQuote, q.ID, models.QuoteOpen, accepted)
+	})
+	if err != nil {
 		return q, err
 	}
-	if err := m.q(ctx, RoleQuote).Where("notice_id = ? AND id <> ?", n.ID, q.ID).
-		Update("state", models.QuoteDeclined).Error; err != nil {
-		return q, err
-	}
-	q.State = models.QuoteAccepted
-	return q, m.update(ctx, RoleQuote, q.ID, q)
+	return accepted, nil
 }
 
 func (m *marketManager) claimNotice(ctx context.Context, id string) error {

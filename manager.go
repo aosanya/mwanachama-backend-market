@@ -162,6 +162,29 @@ func (m *marketManager) update(ctx context.Context, role, id string, v any) erro
 	return m.q(ctx, role).Where("id = ?", id).Updates(row).Error
 }
 
+func (m *marketManager) updateWhileIn(ctx context.Context, role, id, state string, v any) error {
+	row, err := encode(m.st.Object(role), v)
+	if err != nil {
+		return err
+	}
+	res := m.q(ctx, role).Where("id = ? AND state = ?", id, state).Updates(row)
+	if res.Error != nil {
+		return res.Error
+	}
+	if res.RowsAffected == 0 {
+		return ErrConflict
+	}
+	return nil
+}
+
+func (m *marketManager) inTransaction(ctx context.Context, fn func(*marketManager) error) error {
+	return m.st.InTransaction(ctx, func(tx *store) error {
+		inner := *m
+		inner.st = tx
+		return fn(&inner)
+	})
+}
+
 func (m *marketManager) stampEnd(was GroupOrder, g *GroupOrder) {
 	if g.State == was.State {
 		return

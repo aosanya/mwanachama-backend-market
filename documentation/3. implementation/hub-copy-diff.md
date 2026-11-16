@@ -34,5 +34,6 @@ One commit here per hub commit group, each naming the hub hash:
 | 9d70341b, 8debe20f | A group order carries `closed_at` and `cancelled_at`. 8debe20f only restored lines that 0904c63a had undone. |
 | 7f2cb731, 0904c63a | `market_list_orders` takes `state`, `limit` and `after`; an order carries `delivered_at` and `cancelled_at`. 0904c63a's own change was the undoing of the group order lines, so it adds nothing here. |
 | ca52e62a, ab71d9c8 | Test-only: coverage of posters, offers, stock, requests, asks, yeses and notices. |
+| M7 (this repository) | `AcceptQuote` claims, declines the other quotes and accepts the winner in one transaction. The hub copy needs the same change until ISS-105 deletes it. |
 
 The existing tests that called `ListOrders(ctx, caller)` now pass the paging arguments.
