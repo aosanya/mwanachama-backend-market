@@ -54,13 +54,16 @@ func (m *marketManager) SendQuote(ctx context.Context, caller, noticeID string, 
 	if err := m.checks(RoleQuote, q); err != nil {
 		return q, err
 	}
-	if err := m.insert(ctx, RoleQuote, q); err != nil {
-		if gormutil.IsUniqueViolation(err) {
-			return q, ErrConflict
+	err = m.inTransaction(ctx, func(tx *marketManager) error {
+		if err := tx.holdOpenNotice(ctx, noticeID); err != nil {
+			return err
 		}
-		return q, err
+		return tx.insert(ctx, RoleQuote, q)
+	})
+	if gormutil.IsUniqueViolation(err) {
+		return q, ErrConflict
 	}
-	return q, nil
+	return q, err
 }
 
 func (m *marketManager) ListQuotes(ctx context.Context, caller, noticeID string) ([]Quote, error) {
@@ -111,7 +114,16 @@ func (m *marketManager) DraftCounter(ctx context.Context, caller, quoteID string
 	if err := m.checks(RoleDraft, d); err != nil {
 		return d, err
 	}
-	return d, m.insert(ctx, RoleDraft, d)
+	err = m.inTransaction(ctx, func(tx *marketManager) error {
+		if err := tx.holdOpenNotice(ctx, n.ID); err != nil {
+			return err
+		}
+		if err := tx.holdWhileIn(ctx, RoleQuote, q.ID, models.QuoteOpen); err != nil {
+			return err
+		}
+		return tx.insert(ctx, RoleDraft, d)
+	})
+	return d, err
 }
 
 func (m *marketManager) ListDrafts(ctx context.Context, caller, noticeID string) ([]Draft, error) {
@@ -147,12 +159,22 @@ func (m *marketManager) SendCounter(ctx context.Context, caller, draftID string)
 	if d.State != models.DraftWaiting || q.State != models.QuoteOpen || n.State != models.NoticeOpen {
 		return q, ErrConflict
 	}
-	d.State = models.DraftSent
-	if err := m.update(ctx, RoleDraft, d.ID, d); err != nil {
+	sent, countered := d, q
+	sent.State = models.DraftSent
+	countered.CounterPrice, countered.State = d.Price, models.QuoteCountered
+	err = m.inTransaction(ctx, func(tx *marketManager) error {
+		if err := tx.holdOpenNotice(ctx, n.ID); err != nil {
+			return err
+		}
+		if err := tx.updateWhileIn(ctx, RoleDraft, d.ID, models.DraftWaiting, sent); err != nil {
+			return err
+		}
+		return tx.updateWhileIn(ctx, RoleQuote, q.ID, models.QuoteOpen, countered)
+	})
+	if err != nil {
 		return q, err
 	}
-	q.CounterPrice, q.State = d.Price, models.QuoteCountered
-	return q, m.update(ctx, RoleQuote, q.ID, q)
+	return countered, nil
 }
 
 func (m *marketManager) ReviseQuote(ctx context.Context, caller, quoteID string, price float64, note string) (Quote, error) {
@@ -169,8 +191,18 @@ func (m *marketManager) ReviseQuote(ctx context.Context, caller, quoteID string,
 	if price <= 0 {
 		return q, fmt.Errorf("%w: a quote carries a price", ErrInvalid)
 	}
-	q.Price, q.Note, q.CounterPrice, q.State = price, note, 0, models.QuoteOpen
-	return q, m.update(ctx, RoleQuote, q.ID, q)
+	revised := q
+	revised.Price, revised.Note, revised.CounterPrice, revised.State = price, note, 0, models.QuoteOpen
+	err = m.inTransaction(ctx, func(tx *marketManager) error {
+		if err := tx.holdOpenNotice(ctx, n.ID); err != nil {
+			return err
+		}
+		return tx.updateWhileIn(ctx, RoleQuote, q.ID, models.QuoteCountered, revised)
+	})
+	if err != nil {
+		return q, err
+	}
+	return revised, nil
 }
 
 func (m *marketManager) AcceptQuote(ctx context.Context, caller, quoteID string) (Quote, error) {
@@ -204,6 +236,10 @@ func (m *marketManager) AcceptQuote(ctx context.Context, caller, quoteID string)
 
 func (m *marketManager) claimNotice(ctx context.Context, id string) error {
 	return m.moveOpenNotice(ctx, id, models.NoticeSold)
+}
+
+func (m *marketManager) holdOpenNotice(ctx context.Context, id string) error {
+	return m.moveOpenNotice(ctx, id, models.NoticeOpen)
 }
 
 func (m *marketManager) moveOpenNotice(ctx context.Context, id, state string) error {

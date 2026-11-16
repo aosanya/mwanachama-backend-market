@@ -36,5 +36,6 @@ One commit here per hub commit group, each naming the hub hash:
 | ca52e62a, ab71d9c8 | Test-only: coverage of posters, offers, stock, requests, asks, yeses and notices. |
 | M7 (this repository) | `AcceptQuote` claims, declines the other quotes and accepts the winner in one transaction. The hub copy needs the same change until ISS-105 deletes it. |
 | M8 (this repository) | `WithdrawNotice` moves a notice to withdrawn only while it is open and answers a conflict otherwise. The hub copy needs the same change until ISS-105 deletes it. |
+| M9 (this repository) | `SendQuote`, `DraftCounter`, `SendCounter` and `ReviseQuote` write inside a transaction that holds the notice open and guards the quote or draft by the state it read. The hub copy needs the same change until ISS-105 deletes it. |
 
 The existing tests that called `ListOrders(ctx, caller)` now pass the paging arguments.

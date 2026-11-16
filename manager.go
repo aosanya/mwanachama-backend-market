@@ -177,6 +177,17 @@ func (m *marketManager) updateWhileIn(ctx context.Context, role, id, state strin
 	return nil
 }
 
+func (m *marketManager) holdWhileIn(ctx context.Context, role, id, state string) error {
+	res := m.q(ctx, role).Where("id = ? AND state = ?", id, state).Update("state", state)
+	if res.Error != nil {
+		return res.Error
+	}
+	if res.RowsAffected == 0 {
+		return ErrConflict
+	}
+	return nil
+}
+
 func (m *marketManager) inTransaction(ctx context.Context, fn func(*marketManager) error) error {
 	return m.st.InTransaction(ctx, func(tx *store) error {
 		inner := *m
