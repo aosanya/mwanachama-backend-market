@@ -38,6 +38,12 @@ A counter waits for the buyer's new price. The picker accepts only an open quote
 
 The app calls it when a member taps a `quote_sent` or `counter_sent` notification: it checks that the quote is still there before it marks the notification read.
 
+## Reading one draft
+
+`market_get_draft` (`GET /drafts/{draftID}`) returns one draft by id. Only the notice's picker and the agent who wrote the draft may read it, the same sight `market_list_drafts` gives. Every other caller, whether the quoting poster, a rival, a stranger or an empty caller, and an unknown id are all told not found, so a draft the caller may not see cannot be told from one that does not exist. A sent draft still reads, with state sent. The optional `market` argument is the mount name the host adds; the module itself takes only `draftID`.
+
+The app calls it when a member taps a `draft_waiting` notification: it checks that the draft still exists before it marks the notification read.
+
 ## Told
 
 Four events, all in the market category, each told to its subject by default and changeable by the agency: `notice_posted` to every approved poster but the picker, `quote_sent` to the picker, `draft_waiting` to the picker, `counter_sent` to the quoting poster. A draft is never announced to a poster.
