@@ -64,6 +64,7 @@ type MarketManager interface {
 	AnswerAskWithMinutes(ctx context.Context, caller, askID, answer, date, note, offerID string, price float64, minutes int) (Ask, error)
 	WithdrawAsk(ctx context.Context, caller, id string) (Ask, error)
 	ListAsksBy(ctx context.Context, caller, requestID, answer string) ([]Ask, error)
+	GetAsk(ctx context.Context, caller, id string) (Ask, error)
 	ListYesesBy(ctx context.Context, caller, requestID, state string) ([]Yes, error)
 
 	CreateNotice(ctx context.Context, caller string, n Notice) (Notice, error)

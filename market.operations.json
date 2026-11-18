@@ -443,6 +443,33 @@
         }
       ]
     },
+    "get_ask": {
+      "method": "GET",
+      "path": "/asks/{askID}",
+      "call": "GetAsk",
+      "action": "market.ask.read",
+      "tool": "market_get_ask",
+      "title": "Read an ask",
+      "description": "The picker who made it, or the owner of the poster it was put to, reads one ask by id, whatever its answer; any other id or caller is not found.",
+      "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "path",
+          "as": "askID",
+          "refers": "market.ask",
+          "description": "The ask."
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ]
+    },
     "answer_ask": {
       "method": "POST",
       "path": "/asks/{askID}/answer",

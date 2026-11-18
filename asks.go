@@ -172,6 +172,26 @@ func (m *marketManager) callersOwn(ctx context.Context, q *gorm.DB, caller strin
 	return q.Where("(picker = ? OR poster_id IN (?))", caller, m.q(ctx, RolePoster).Select("id").Where("owner = ?", caller))
 }
 
+func (m *marketManager) GetAsk(ctx context.Context, caller, id string) (Ask, error) {
+	var a Ask
+	if err := m.get(ctx, RoleAsk, id, &a); err != nil {
+		return a, err
+	}
+	if caller != "" && a.Picker == caller {
+		a.PickerName = m.nameOf(ctx, a.Picker)
+		return a, nil
+	}
+	owned, err := m.ownedPosters(ctx, caller)
+	if err != nil {
+		return a, err
+	}
+	if owned[a.PosterID] {
+		a.PickerName = m.nameOf(ctx, a.Picker)
+		return a, nil
+	}
+	return a, ErrNotFound
+}
+
 func (m *marketManager) ListAsksBy(ctx context.Context, caller, requestID, answer string) ([]Ask, error) {
 	if answer != "" && !knownAnswer(answer) {
 		return nil, fmt.Errorf("%w: %q is not an answer", ErrInvalid, answer)
