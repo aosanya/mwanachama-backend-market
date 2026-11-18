@@ -32,6 +32,12 @@ It cannot send a counter, accept a quote or send a quote. Each step names someon
 
 A counter waits for the buyer's new price. The picker accepts only an open quote, so a countered quote cannot be accepted until the poster revises it.
 
+## Reading one quote
+
+`market_get_quote` (`GET /quotes/{quoteID}`) returns one quote by id. The notice's picker, an agent and the owner of the quote's own poster may read it, the same sight `market_list_quotes` gives. Every other caller, whether a rival poster, a stranger or an empty caller, and an unknown id are all told not found, so a quote the caller may not see cannot be told from one that does not exist. The optional `market` argument is the mount name the host adds; the module itself takes only `quoteID`.
+
+The app calls it when a member taps a `quote_sent` or `counter_sent` notification: it checks that the quote is still there before it marks the notification read.
+
 ## Told
 
 Four events, all in the market category, each told to its subject by default and changeable by the agency: `notice_posted` to every approved poster but the picker, `quote_sent` to the picker, `draft_waiting` to the picker, `counter_sent` to the quoting poster. A draft is never announced to a poster.
