@@ -661,6 +661,33 @@
         }
       ]
     },
+    "get_notice": {
+      "method": "GET",
+      "path": "/notices/{noticeID}",
+      "call": "GetNotice",
+      "action": "market.notice.read",
+      "tool": "market_get_notice",
+      "title": "Read a notice",
+      "description": "One notice by id, in any state, with its state, so a caller can tell a withdrawn or sold notice from an open one. It carries its picker's id and full name only for the picker; for everyone else it carries the picker's first name when the host supplies names, and no id. A missing id is not found.",
+      "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "path",
+          "as": "noticeID",
+          "refers": "market.notice",
+          "description": "The notice."
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ]
+    },
     "buy_now": {
       "method": "POST",
       "path": "/offers/{offerID}/buy",

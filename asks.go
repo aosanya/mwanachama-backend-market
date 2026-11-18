@@ -279,14 +279,27 @@ func (m *marketManager) ListNoticesFor(ctx context.Context, caller string) ([]No
 		return nil, err
 	}
 	for i := range notices {
-		name := m.nameOf(ctx, notices[i].Picker)
-		if caller != "" && notices[i].Picker == caller {
-			notices[i].PickerName = name
-			continue
-		}
-		notices[i].Picker, notices[i].PickerName = "", firstWord(name)
+		m.redactNotice(ctx, caller, &notices[i])
 	}
 	return notices, nil
+}
+
+func (m *marketManager) GetNotice(ctx context.Context, caller, id string) (Notice, error) {
+	var n Notice
+	if err := m.get(ctx, RoleNotice, id, &n); err != nil {
+		return Notice{}, err
+	}
+	m.redactNotice(ctx, caller, &n)
+	return n, nil
+}
+
+func (m *marketManager) redactNotice(ctx context.Context, caller string, n *Notice) {
+	name := m.nameOf(ctx, n.Picker)
+	if caller != "" && n.Picker == caller {
+		n.PickerName = name
+		return
+	}
+	n.Picker, n.PickerName = "", firstWord(name)
 }
 
 func firstWord(name string) string {

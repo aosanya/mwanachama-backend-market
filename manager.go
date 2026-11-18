@@ -71,6 +71,7 @@ type MarketManager interface {
 	WithdrawNotice(ctx context.Context, caller, id string) (Notice, error)
 	ListNotices(ctx context.Context) ([]Notice, error)
 	ListNoticesFor(ctx context.Context, caller string) ([]Notice, error)
+	GetNotice(ctx context.Context, caller, id string) (Notice, error)
 
 	SendQuote(ctx context.Context, caller, noticeID string, q Quote) (Quote, error)
 	ListQuotes(ctx context.Context, caller, noticeID string) ([]Quote, error)
