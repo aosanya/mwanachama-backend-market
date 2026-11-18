@@ -1516,6 +1516,33 @@
         }
       ]
     },
+    "get_draft": {
+      "method": "GET",
+      "path": "/drafts/{draftID}",
+      "call": "GetDraft",
+      "action": "market.draft.read",
+      "tool": "market_get_draft",
+      "title": "Read a draft",
+      "description": "The notice's picker and the agent who wrote a draft read it by id; anyone else, and an id that does not exist, answer not found.",
+      "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "path",
+          "as": "draftID",
+          "refers": "market.draft",
+          "description": "The draft."
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ]
+    },
     "send_counter": {
       "method": "POST",
       "path": "/drafts/{draftID}/send",

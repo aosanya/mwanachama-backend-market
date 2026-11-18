@@ -162,6 +162,21 @@ func (m *marketManager) ListDrafts(ctx context.Context, caller, noticeID string)
 	return out, nil
 }
 
+func (m *marketManager) GetDraft(ctx context.Context, caller, draftID string) (Draft, error) {
+	var d Draft
+	if err := m.get(ctx, RoleDraft, draftID, &d); err != nil {
+		return Draft{}, err
+	}
+	n, err := m.noticeOf(ctx, d.NoticeID)
+	if err != nil {
+		return Draft{}, err
+	}
+	if caller == "" || (n.Picker != caller && d.Author != caller) {
+		return Draft{}, ErrNotFound
+	}
+	return d, nil
+}
+
 func (m *marketManager) SendCounter(ctx context.Context, caller, draftID string) (Quote, error) {
 	var d Draft
 	if err := m.get(ctx, RoleDraft, draftID, &d); err != nil {

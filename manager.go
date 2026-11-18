@@ -78,6 +78,7 @@ type MarketManager interface {
 	GetQuote(ctx context.Context, caller, quoteID string) (Quote, error)
 	DraftCounter(ctx context.Context, caller, quoteID string, price float64, note string) (Draft, error)
 	ListDrafts(ctx context.Context, caller, noticeID string) ([]Draft, error)
+	GetDraft(ctx context.Context, caller, draftID string) (Draft, error)
 	SendCounter(ctx context.Context, caller, draftID string) (Quote, error)
 	ReviseQuote(ctx context.Context, caller, quoteID string, price float64, note string) (Quote, error)
 	AcceptQuote(ctx context.Context, caller, quoteID string) (Quote, error)
