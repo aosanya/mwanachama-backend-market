@@ -1423,6 +1423,33 @@
         }
       ]
     },
+    "get_quote": {
+      "method": "GET",
+      "path": "/quotes/{quoteID}",
+      "call": "GetQuote",
+      "action": "market.quote.read",
+      "tool": "market_get_quote",
+      "title": "Read a quote",
+      "description": "The notice's picker, an agent or the quote's own poster reads one quote; any other caller is told not found.",
+      "args": [
+        {
+          "from": "caller",
+          "as": "caller",
+          "description": "Who is acting, supplied by the mount. Never read from the request."
+        },
+        {
+          "from": "path",
+          "as": "quoteID",
+          "refers": "market.quote",
+          "description": "The quote."
+        }
+      ],
+      "returns": [
+        {
+          "body": true
+        }
+      ]
+    },
     "draft_counter": {
       "method": "POST",
       "path": "/quotes/{quoteID}/drafts",

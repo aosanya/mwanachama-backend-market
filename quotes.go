@@ -91,6 +91,24 @@ func (m *marketManager) ListQuotes(ctx context.Context, caller, noticeID string)
 	return out, nil
 }
 
+func (m *marketManager) GetQuote(ctx context.Context, caller, quoteID string) (Quote, error) {
+	q, n, err := m.quoteOn(ctx, quoteID)
+	if err != nil {
+		return Quote{}, err
+	}
+	if caller != "" && (n.Picker == caller || m.isWho(ctx, WhoAgent, caller, parties{})) {
+		return q, nil
+	}
+	owned, err := m.ownedPosters(ctx, caller)
+	if err != nil {
+		return Quote{}, err
+	}
+	if !owned[q.PosterID] {
+		return Quote{}, ErrNotFound
+	}
+	return q, nil
+}
+
 func (m *marketManager) noticeOf(ctx context.Context, id string) (Notice, error) {
 	var n Notice
 	return n, m.get(ctx, RoleNotice, id, &n)
