@@ -1,6 +1,6 @@
 # Hub copy diff
 
-`mwanachama-backend-market` is the custodian of the market module. The hub (`projects/hub-steward/code/wakala-api/modules/market`) holds a copy made on 2026-11-04 and changed it afterwards. Every change made in that copy exists here, so the two differ by the import path only (hub issue M5, the market part of ISS-105).
+`mwanachama-backend-market` is the custodian of the market module. The hub (`projects/hub-steward/code/wakala-api/modules/market`) holds a copy made on 2026-11-04 and changed it afterwards. Every change made in that copy exists here. The differences that remain, in both directions, are listed in [hub-import-drift.md](hub-import-drift.md).
 
 ## Command
 
@@ -21,6 +21,10 @@ The default path is `../projects/hub-steward/code/wakala-api/modules/market`, re
 
 No file differs and nothing exists only in the hub, so the script exits 0. What remains is `Only in backend` lines: the test files written here (the hub copy carried only seven test files, all of which now exist here and are identical) and `spec/examples` (the two example blueprints used by `examples_test.go`).
 
+## Result of 2026-11-19
+
+The hub copy gained two test files after the previous run (`kinds_cover_test.go`, `validate_cover_test.go`, hub commit 2057f14c); both now exist here, so nothing exists only in the hub. The script still exits 1, because four files (`asks.go`, `manager.go`, `quotes.go`, `market.operations.json`) differ: this repository is ahead of the hub copy by the four read operations and the transactional quote writers. [hub-import-drift.md](hub-import-drift.md) lists every difference with its disposition.
+
 ## The hub commits carried over
 
 One commit here per hub commit group, each naming the hub hash:
@@ -34,8 +38,9 @@ One commit here per hub commit group, each naming the hub hash:
 | 9d70341b, 8debe20f | A group order carries `closed_at` and `cancelled_at`. 8debe20f only restored lines that 0904c63a had undone. |
 | 7f2cb731, 0904c63a | `market_list_orders` takes `state`, `limit` and `after`; an order carries `delivered_at` and `cancelled_at`. 0904c63a's own change was the undoing of the group order lines, so it adds nothing here. |
 | ca52e62a, ab71d9c8 | Test-only: coverage of posters, offers, stock, requests, asks, yeses and notices. |
-| M7 (this repository) | `AcceptQuote` claims, declines the other quotes and accepts the winner in one transaction. The hub copy needs the same change until ISS-105 deletes it. |
-| M8 (this repository) | `WithdrawNotice` moves a notice to withdrawn only while it is open and answers a conflict otherwise. The hub copy needs the same change until ISS-105 deletes it. |
-| M9 (this repository) | `SendQuote`, `DraftCounter`, `SendCounter` and `ReviseQuote` write inside a transaction that holds the notice open and guards the quote or draft by the state it read. The hub copy needs the same change until ISS-105 deletes it. |
+| 2057f14c | Test-only: coverage of kinds ranking, product categorising and the `Check` rules (`kinds_cover_test.go`, `validate_cover_test.go`). |
+| M7 (this repository) | `AcceptQuote` claims, declines the other quotes and accepts the winner in one transaction. The hub copy needs the same change until it is deleted. |
+| M8 (this repository) | `WithdrawNotice` moves a notice to withdrawn only while it is open and answers a conflict otherwise. The hub copy needs the same change until it is deleted. |
+| M9 (this repository) | `SendQuote`, `DraftCounter`, `SendCounter` and `ReviseQuote` write inside a transaction that holds the notice open and guards the quote or draft by the state it read. The hub copy needs the same change until it is deleted. |
 
 The existing tests that called `ListOrders(ctx, caller)` now pass the paging arguments.
